@@ -1,0 +1,10 @@
+{
+  "version": "0.2.1",
+  "tasks": [
+    {
+      "taskName": "task-MakeHuman-makehuman-deca8874422d",
+      "appliesTo": "/",
+      "type": "launch"
+    }
+  ]
+}
