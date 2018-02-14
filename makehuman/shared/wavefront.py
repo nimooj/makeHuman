@@ -166,6 +166,12 @@ def writeObjFile(path, meshes, filepath, writeMTL=True, config=None, filterMaske
     f = open(filepath, "w")
 
 
+    min_y = 0
+    max_y = 0
+    dist = 100
+    crotch_y = 0.0
+
+
     fp.write(
         "# MakeHuman exported OBJ\n" +
         "# www.makehuman.org\n\n")
@@ -191,7 +197,34 @@ def writeObjFile(path, meshes, filepath, writeMTL=True, config=None, filterMaske
     # Vertices
     for mesh in meshes:
         fp.write("".join( ["v %.4f %.4f %.4f\n" % tuple(co + offset) for co in mesh.coord] ))
-        f.write("".join( ["%.4f %.4f %.4f\n" % tuple(co + offset) for co in mesh.coord]))
+        f.write("".join( ["%.3f %.3f %.3f\n" % tuple(co + offset) for co in mesh.coord]))
+
+        # Get max Y val
+        for co in mesh.coord:
+            #print "mesh coord\n"
+            #print str(tuple(co + offset))
+            l = str(tuple(co + offset))
+            l = l.replace('(', '')
+            l = l.replace(')', '')
+            sx, sy, sz = l.split(', ')
+            x = float(sx)
+            y = float(sy)
+            z = float(sz)
+
+
+            #if x == 0 and y < crotch_y:
+            #    crotch_y = y
+            r = math.sqrt(x**2 + y**2 + z**2)
+            if r < dist:
+                dist = r
+                crotch_y = y
+
+
+            if y < min_y:
+                min_y = y
+            if y > max_y:
+                max_y = y
+
 
 
     # Vertex normals
@@ -254,6 +287,9 @@ def writeObjFile(path, meshes, filepath, writeMTL=True, config=None, filterMaske
         for mesh in meshes:
             writeMaterial(fp, mesh.material, config)
         fp.close()
+
+    
+    return [(min_y+max_y)/2, crotch_y]
 
 
 #

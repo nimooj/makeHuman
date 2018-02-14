@@ -152,7 +152,8 @@ class ExporterCollada(Exporter):
 
 
 def load(app):
-    app.addExporter(ExporterCollada())
+    #app.addExporter(ExporterCollada())
+    return
 
 def unload(app):
     pass

@@ -76,8 +76,8 @@ class ExportTaskView(gui3d.TaskView):
         self.optionsBox.setAutoResize(True)
 
         # Scales
-        self.scaleBox = self.addRightWidget(gui.GroupBox('Scale units'))
-        self.scaleButtons = self.addScales(self.scaleBox)
+        #self.scaleBox = self.addRightWidget(gui.GroupBox('Scale units'))
+        #self.scaleButtons = self.addScales(self.scaleBox)
 
         self.boxes = {
             'mesh': self.formatBox,

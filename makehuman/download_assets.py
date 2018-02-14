@@ -305,6 +305,7 @@ if __name__ == '__main__':
 
     # Setup FTP connection
     print "Connecting to FTP..."
+    print ftpUrl
     ftp = FTP(ftpUrl)
     ftp.login()
     ftp.cwd(ftpPath.replace('\\', '/'))

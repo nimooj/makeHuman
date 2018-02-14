@@ -73,8 +73,8 @@ def distPath(subpath=""):
 
 def parseConfig(configPath):
     if os.path.isfile(configPath):
-        import ConfigParser
-        config = ConfigParser.ConfigParser()
+        import configparser
+        config = configparser.ConfigParser()
         config.read(configPath)
         return config
     else:
@@ -97,9 +97,9 @@ def configure(confpath):
 
   conf = parseConfig(confpath)
   if conf is None:
-    print "No config file at %s, using defaults or options passed on commandline." % confpath
+    print("No config file at %s, using defaults or options passed on commandline." % confpath)
   else:
-    print "Using config file at %s. NOTE: properties in config file will override any other settings!" % confpath
+    print("Using config file at %s. NOTE: properties in config file will override any other settings!" % confpath)
 
     hgpath = _conf_get(conf, 'General', 'hgPath', hgpath)
     package_name = _conf_get(conf, 'Win32', 'packageName', package_name)
@@ -124,7 +124,7 @@ i = exportInfo = build_prepare.export(sourcePath = hgRootPath(), exportFolder = 
 
 # Create config file for the Qt libraries to be able to load plugins
 # (such as for loading jpg and svg images)
-qtConf = open(i.applicationPath('qt.conf'), 'wb')
+qtConf = open(i.applicationPath('qt.conf'), 'wt')
 qtConf.write('[Paths]\nPrefix = .\nPlugins = qt4_plugins')
 qtConf.close()
 exportInfo.datas.append(os.path.join(i.rootSubpath, 'qt.conf'))
@@ -149,7 +149,7 @@ a = Analysis([appExecutable] + i.getPluginFiles(),
              hookspath=None,
              runtime_hooks=None
              )
-
+             
 ##### include mydir in distribution #######
 def extra_datas(mydir):
     global exportInfo
@@ -225,20 +225,19 @@ elif sys.platform == 'win32':
         upx=True,
         name='makehuman')
     target_dir = hgRootPath('buildscripts\win32\dist\makehuman')
-    if package_explicit and not package_version is None and not package_name is None:
-        label = package_name + "-" + package_version
-    else:
-        label = package_name + "-" + VERSION_FN;
-    zipfilename = distPath('%s-win32.zip' % label)
-    zip = zipfile.ZipFile(zipfilename, 'w', zipfile.ZIP_DEFLATED)
-    rootlen = len(target_dir) + 1
-    for base, dirs, files in os.walk(target_dir):
-        for file in files:
-            fn = os.path.join(base, file)
-            zip.write(fn, fn[rootlen:])
-    zip.close()
-    if not dist_dir is None:
-        base = os.path.basename(zipfilename)
-        dest = os.path.join(dist_dir,base)
-        os.rename(zipfilename,dest)
-
+#    if package_explicit and not package_version is None and not package_name is None:
+#        label = package_name + "-" + package_version
+#    else:
+#        label = package_name + "-" + VERSION_FN;
+#    zipfilename = distPath('%s-win32.zip' % label)
+#    zip = zipfile.ZipFile(zipfilename, 'w', zipfile.ZIP_DEFLATED)
+#    rootlen = len(target_dir) + 1
+#    for base, dirs, files in os.walk(target_dir):
+#        for file in files:
+#            fn = os.path.join(base, file)
+#            zip.write(fn, fn[rootlen:])
+#    zip.close()
+#    if not dist_dir is None:
+#        base = os.path.basename(zipfilename)
+#        dest = os.path.join(dist_dir,base)
+#        os.rename(zipfilename,dest)

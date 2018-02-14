@@ -67,7 +67,8 @@ class ExporterMhx2(Exporter):
         return cfg
 
 def load(app):
-    app.addExporter(ExporterMhx2())
+    #app.addExporter(ExporterMhx2())
+    return
 
 def unload(app):
     pass

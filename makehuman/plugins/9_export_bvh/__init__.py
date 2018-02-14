@@ -65,7 +65,8 @@ class ExporterBVH(Exporter):
         import gui
         self.taskview       = taskview
         #self.exportAnimations = options.addWidget(gui.CheckBox("Animations", True))
-        self.feetOnGround = options.addWidget(gui.CheckBox("Feet on ground", True))
+        #self.feetOnGround = options.addWidget(gui.CheckBox("Feet on ground", True))
+        self.feetOnGround = options.addWidget(gui.CheckBox("Feet on ground", False))
 
     def getConfig(self):
         cfg = BvhConfig()
@@ -86,12 +87,8 @@ class ExporterBVH(Exporter):
         cfg.setHuman(human)
 
         j = human.getJoints()
-        f = open("bvh_joints.txt", "w")
         for j_name in j:
             p = skel.getJointPosition(j_name, human)
-            f.write(str(p) + "\n")
-        f.close()
-
 
         if cfg.exportAnimations and len(human.getAnimations()) > 0:
             baseFilename = os.path.splitext(filename("bvh"))[0]
@@ -115,10 +112,12 @@ class ExporterBVH(Exporter):
                 bvhData.scale(cfg.scale)
             if cfg.feetOnGround:
                 bvhData.offset(cfg.offset)
+
             bvhData.writeToFile(fn)
 
 def load(app):
-    app.addExporter(ExporterBVH())
+    #app.addExporter(ExporterBVH())
+    return
 
 def unload(app):
     pass

@@ -44,6 +44,7 @@ def calculateSurface(mesh, vertGroups=None, faceMask=None):
     Calculate surface area of a mesh. Specify vertGroups or faceMask to
     calculate area of a subset of the mesh and filter out other faces.
     """
+
     if vertGroups is not None:
         fvert = mesh.getFacesForGroups(vertGroups)
     elif faceMask is not None:
@@ -52,7 +53,6 @@ def calculateSurface(mesh, vertGroups=None, faceMask=None):
     else:
         fvert = mesh.fvert
 
-    print vertGroups
 
     if mesh.vertsPerPrimitive == 4:
         # Split quads in triangles (assumes clockwise ordering of verts)

@@ -75,7 +75,7 @@ class ExporterOBJ(Exporter):
         cfg.useNormals = self.useNormals.selected
 
         cfg.feetOnGround      = self.feetOnGround.selected
-        cfg.scale,cfg.unit    = self.taskview.getScale()
+        #cfg.scale,cfg.unit    = self.taskview.getScale()
         cfg.hiddenGeom        = self.hiddenGeom.selected
 
         return cfg

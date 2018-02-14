@@ -94,7 +94,7 @@ class ExportConfig(object):
 
     def selectedOptions(self, exporter):
         self.feetOnGround =         exporter.feetOnGround.selected
-        self.scale,self.unit    = exporter.taskview.getScale()
+        #self.scale,self.unit    = exporter.taskview.getScale()
         return self
 
 

@@ -45,6 +45,8 @@ import log
 import numpy as np
 import transformations as tm
 
+import os.path
+
 from math import pi
 D = pi/180
 
@@ -366,6 +368,209 @@ class BVH():
                 # Z-up
                 return True
 
+    # custom fromSkeleton with filepath
+    def fromObjSkeleton(self, skel, filepath, filename, centering, animationTrack=None, dummyJoints=True):
+        """
+        Construct a BVH object from a skeleton structure and optionally an 
+        animation track. If no animation track is specified, a dummy animation
+        of one frame will be added.
+        If dummyJoints is true (the default) then extra dummy joints will be
+        introduced when bones are not directly connected, but have their head
+        position offset from their parent bone tail. This often happens when
+        multiple bones are attached to one parent bones, for example in the
+        shoulder, hip and hand areas.
+        When dummyJoints is set to false, for each bone in the skeleton, exactly
+        one BVH joint will be created. How this is interpreted depends on the
+        tool importing the BVH file. Some create only a bone between the parent
+        and its first child joint, and create empty offsets to the other childs.
+        Other tools create one bone, with the tail position being the average
+        of all the child joints. Dummy joints are introduced to prevent 
+        ambiguities between tools. Dummy joints carry the same name as the bone
+        they parent, with "__" prepended.
+
+        NOTE: Make sure that the skeleton has only one root.
+        """
+
+        #bi_path = os.path.join(filepath, filename+"Landmarks")
+        #bj_path = os.path.join(filepath, filename+"Joints")
+
+        j_path = os.path.join(filepath, "..\\" + filename+ "joints.txt")
+        j = open(j_path, "w")
+
+
+        #bi = open(bi_path, "w")
+        bi = open(filename+"Landmarks", "w")
+        bi.write("Landmark=6\n")
+
+        #bj = open(bj_path, "w")
+        bj = open(filename+"Joints", "w")
+        bj.write("Joints=12\n")
+
+        clavicle = []
+
+        # Traverse skeleton joints in depth-first order
+        for jointName in skel.getJointNames():
+            bone = skel.getBone(jointName)
+            if dummyJoints and bone.parent and \
+               (bone.getRestHeadPos() != bone.parent.getRestTailPos()).any():
+                # Introduce a dummy joint to cover the offset between two not-
+                # connected bones
+                joint = self.addJoint(bone.parent.name, "__"+jointName)
+                joint.channels = ["Zrotation", "Xrotation", "Yrotation"]
+                parentName = joint.name
+
+                offset = bone.parent.getRestTailPos() - bone.parent.getRestHeadPos()
+                p = self.__calcPosition(joint, offset)
+
+
+                offset = bone.getRestHeadPos() -  bone.parent.getRestTailPos()
+            else:
+                parentName = bone.parent.name if bone.parent else None
+                offset = bone.getRestOffset()
+
+            if bone.parent:
+                joint = self.addJoint(parentName, jointName)
+                joint.channels = ["Zrotation", "Xrotation", "Yrotation"]
+            else:
+                # Root bones have translation channels
+                joint = self.addRootJoint(bone.name)
+                joint.channels = ["Xposition", "Yposition", "Zposition", "Zrotation", "Xrotation", "Yrotation"]
+    
+            p = self.__calcPosition(joint, offset)
+
+            if not bone.hasChildren():
+                endJoint = self.addJoint(jointName, 'End effector')
+                offset = bone.getRestTailPos() - bone.getRestHeadPos()
+                p = self.__calcPosition(endJoint, offset)
+
+            # Get Crotch level
+            #if p[0] == 0 and p[1] < 0 and crotch_flag == 0:
+            #    if crotch_lv
+
+            if ("spine03" in jointName):  # Waist level
+                bi.write("Waist Level=" + str((p[1]-centering)*100) + "\n")
+                j.write(str(p) + "\n")
+
+            if ("spine05" in jointName):  # Crotch level
+                #bi.write("Crotch Level=" + str((p[1]-centering)*100) + "\n")
+                bj.write("Pelvis Center=" + str(0.00) + "," + str((p[1]-centering)*100) + "\n")
+                j.write(str(p) + "\n")
+
+            if ("wrist" in jointName): # wrist level
+                if ".L" in jointName:
+                    bi.write("Wrist Level=" + str((p[1]-centering)*100) + "\n")
+                    bj.write("Left Wrist=" + str(p[0]*100) + "," + str((p[1]-centering)*100) + "\n")
+                elif ".R" in jointName:
+                    bj.write("Right Wrist=" + str(p[0]*100) + "," + str((p[1]-centering)*100) + "\n")
+                j.write(str(p) + "\n")
+
+
+            if ("neck01" in jointName): # side neck level
+                bi.write("Side Neck Level=" + str((p[1]-centering)*100) + "\n")
+                bj.write("Neck Center=" + str(p[0]*100) + "," + str((p[1]-centering)*100) + "\n")                    
+                j.write(str(p) + "\n")
+
+            if ("neck03" in jointName): # head center
+                bj.write("Head Center=" + str(0.00) + "," + str((p[1]-centering)*100) + "\n")
+                j.write(str(p) + "\n")
+
+            #if ("head" in jointName): 
+
+            if ("foot" in jointName): # ankle level
+                if ".L" in jointName:
+                    bi.write("Ankle Level=" + str((p[1]-centering)*100) + "\n")
+                    bj.write("Left Ankle=" + str(p[0]*100) + "," + str((p[1]-centering)*100) + "\n")
+                elif ".R" in jointName:
+                    bj.write("Right Ankle=" + str(p[0]*100) + "," + str((p[1]-centering)*100) + "\n")
+                j.write(str(p) + "\n")
+
+            if ("clavicle.R" == jointName): 
+                x, y, z = p
+                if not clavicle:
+                    clavicle.append(x)
+                    clavicle.append(y)
+                    clavicle.append(z)
+                else:
+                    clavicle[0] += x
+                    clavicle[0] /= 2
+                    bj.write("Shoulder Center=" + str(clavicle[0]*100) + "," + str((clavicle[1]-centering)*100) + "\n")
+                j.write(str(p) + "\n")
+
+            if ("clavicle.L" == jointName): 
+                x, y, z = p
+                if not clavicle:
+                    clavicle.append(x)
+                    clavicle.append(y)
+                    clavicle.append(z)
+                else:
+                    clavicle[0] += x
+                    clavicle[0] /= 2
+                    bj.write("Shoulder Center=" + str(clavicle[0]*100) + "," + str((clavicle[1]-centering)*100) + "\n")
+                j.write(str(p) + "\n")
+
+            if ("upperarm01" in jointName):
+                if ".L" in jointName:
+                    bi.write("Shoulder Level=" + str((p[1]-centering)*100) + "\n")
+                    bj.write("Left Shoulder=" + str(p[0]*100)+","+str((p[1]-centering)*100)+"\n")
+                elif ".R" in jointName:
+                    bj.write("Right Shoulder=" + str(p[0]*100)+","+str((p[1]-centering)*100)+"\n")
+                j.write(str(p) + "\n")
+
+            if ("upperleg01" in jointName):
+                if ".L" in jointName:
+                    bj.write("Left Pelvis="+str(p[0]*100) + "," + str((p[1] - centering)*100) + "\n")
+                elif ".R" in jointName:
+                    bj.write("Right Pelvis="+str(p[0]*100) + "," + str((p[1]- centering)*100) + "\n")
+                j.write(str(p) + "\n")
+
+
+        bi.close()
+        bj.close()
+        j.close()
+
+        self.__cacheGetJoints()
+        nonEndJoints = [ joint for joint in self.getJoints() if not joint.isEndConnector() ]
+
+        if animationTrack:
+            self.frameCount = animationTrack.nFrames
+            self.frameTime = 1.0/animationTrack.frameRate
+
+            jointToBoneIdx = {}
+            for joint in nonEndJoints:
+                if skel.containsBone(joint.name):
+                    jointToBoneIdx[joint.name] = skel.getBone(joint.name).index
+                else:
+                    jointToBoneIdx[joint.name] = -1
+
+            for fIdx in xrange(animationTrack.nFrames):
+                offset = fIdx * animationTrack.nBones
+                for jIdx,joint in enumerate(nonEndJoints):
+                    bIdx = jointToBoneIdx[joint.name]
+                    if bIdx < 0:
+                        poseMat = np.identity(4, dtype=np.float32)
+                    else:
+                        poseMat = animationTrack.data[offset + bIdx]
+
+                    if len(joint.channels) == 6:
+                        # Add transformation
+                        tx, ty, tz = poseMat[:3,3]
+                        joint.frames.extend([tx, ty, tz])
+                    ay,ax,az = tm.euler_from_matrix(poseMat, "syxz")
+                    joint.frames.extend([az/D, ax/D, ay/D])
+        else:
+            # Add bogus animation with one frame
+            self.frameCount = 1
+            self.frameTime = 1.0
+            for jIdx,joint in enumerate(nonEndJoints):
+                if len(joint.channels) == 6:
+                    # Add transformation
+                    joint.frames.extend([0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+                else:
+                    joint.frames.extend([0.0, 0.0, 0.0])
+
+        for joint in self.getJoints():
+            joint.calculateFrames()
+
     def fromSkeleton(self, skel, animationTrack=None, dummyJoints=True):
         """
         Construct a BVH object from a skeleton structure and optionally an 
@@ -401,6 +606,7 @@ class BVH():
 
                 offset = bone.parent.getRestTailPos() - bone.parent.getRestHeadPos()
                 self.__calcPosition(joint, offset)
+
                 offset = bone.getRestHeadPos() -  bone.parent.getRestTailPos()
             else:
                 parentName = bone.parent.name if bone.parent else None
@@ -415,6 +621,7 @@ class BVH():
                 joint.channels = ["Xposition", "Yposition", "Zposition", "Zrotation", "Xrotation", "Yrotation"]
     
             self.__calcPosition(joint, offset)
+
             if not bone.hasChildren():
                 endJoint = self.addJoint(jointName, 'End effector')
                 offset = bone.getRestTailPos() - bone.getRestHeadPos()
@@ -583,6 +790,7 @@ class BVH():
         Calculate this joint's position using offset (from parent) defined in
         BVH hierarchy data.
         """
+
         joint.offset = np.asarray(offset, dtype=np.float32)
 
         if self.convertFromZUp:
@@ -603,6 +811,7 @@ class BVH():
         # Create world rest matrix for joint (only translation)
         joint.matRestGlobal = np.identity(4, dtype=np.float32)
         joint.matRestGlobal[:3,3] = joint.position
+        return joint.position
 
     def scale(self, scaleFactor):
         """
@@ -794,4 +1003,10 @@ def load(filename, convertFromZUp="auto", allowTranslation="onlyroot"):
 def createFromSkeleton(skel, animationTrack=None, dummyJoints=True):
     result = BVH()
     result.fromSkeleton(skel, animationTrack, dummyJoints)
+    return result
+
+# custom createFromSkeleton with filepath
+def createFromSkeleton(skel, filepaht, filename, animationTrack=None, dummyJoints=True):
+    result = BVH()
+    result.fromSkeleton(skel, filepath, filename, animationTrack, dummyJoints)
     return result
