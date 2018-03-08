@@ -47,7 +47,7 @@ depthless False
 castShadows True
 receiveShadows True
 
-diffuseTexture ../textures/young_lightskinned_female_diffuse3.png
+diffuseTexture ../textures/young_lightskinned_female_diffuse.png
 
 sssEnabled True
 sssRScale 5.0
@@ -60,7 +60,7 @@ shaderParam litsphereTexture data/litspheres/lit_standard_skin.png
 
 shaderConfig ambientOcclusion True
 shaderConfig normal False
-shaderConfig bump True
+shaderConfig bump False
 shaderConfig displacement False
 shaderConfig vertexColors True
 shaderConfig spec True

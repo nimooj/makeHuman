@@ -56,11 +56,14 @@ def exportJoints(human, filepath, filename, centering):
 
     skel = human.getSkeleton()
     b = bvh.BVH()
+    joints = {}
 
     if human.isPosed():
-        b.fromObjSkeleton(skel, filepath, filename, centering, human.getActiveAnimation())
+        joints = b.fromObjSkeleton(skel, filepath, filename, centering, human.getActiveAnimation())
     else:
-        b.fromObjSkeleton(skel, filepath, filename, centering)
+        joints = b.fromObjSkeleton(skel, filepath, filename, centering)
+
+    return joints
 
 
 def exportObj(filepath, config=None):
@@ -73,6 +76,7 @@ def exportObj(filepath, config=None):
 
     # root dir
     root = filepath.replace(filename, "")
+    height = 0
 
     progress(0, 0.3, "Collecting Objects")
     objects = human.getObjects(excludeZeroFaceObjs=not config.hiddenGeom)
@@ -93,8 +97,17 @@ def exportObj(filepath, config=None):
 
     pure_name = filename.replace(".obj", "")
     progress(0.3, 0.99, "Writing Objects")
-    #wavefront.writeObjFile(filepath, meshes, True, config, filterMaskedFaces=not config.hiddenGeom)
-    centering, crotch_y = wavefront.writeObjFile(filepath, meshes, os.path.join(root, "..\\" + pure_name + "vertices.txt"), True, config, filterMaskedFaces=not config.hiddenGeom)
+
+
+
+    #centering, crotch_y = wavefront.writeObjFile(filepath, meshes, True, config, filterMaskedFaces=not config.hiddenGeom)
+    centering, crotch_y = wavefront.writeObjFile(filepath, meshes, os.path.join(filepath, "..\\" + pure_name + "vertices.txt"), True, config, filterMaskedFaces=not config.hiddenGeom)
+
+    joints = exportJoints(human, filepath, pure_name, centering)
+    wavefront.splitSections(filepath, pure_name, meshes, crotch_y, joints, config)
+
+    crotch_y -= centering
+    crotch_y *= 100
 
     #if 'Anaconda Prompt (2)' in win32gui.GetWindowText(0xffff):
     # print win32gui.GetWindowText(0xffff)
@@ -104,24 +117,24 @@ def exportObj(filepath, config=None):
     # print p
     # print p[0].pid
 
-    crotch_y = crotch_y*100
-    #crotch_y *= 100
+    #print  "before crotch_y: " + str(crotch_y)
+    #print "centering: " + str(centering)
+    #print  "after crotch_y: " + str(crotch_y)
 
-    print "centering: " + str(centering)
-    print  "crotch_y: " + str(crotch_y)
-
+   # crotch_y = (crotch_y*100-centering)
+    print crotch_y
     r = win32api.SendMessage(win32con.HWND_BROADCAST, 56789, 0, 0)
     #win32api.RegisterWindowMessage('56789')
 
     cpid = win32api.GetCurrentProcessId();
 
-    exportJoints(human, filepath, pure_name, centering)
 
     path = os.path.join(root, pure_name+ ".BodyInfo")
 
     bl = open(pure_name + "Landmarks", "r")
     bj = open(pure_name + "Joints", "r")
-    bv = open("common_idx", "r")
+    bv = open(pure_name + "Indices", "r")
+    #bv = open("common_idx", "r")
 
     f = open(path, "w")
 
@@ -194,6 +207,7 @@ def exportObj(filepath, config=None):
 
     os.remove(pure_name+"Landmarks")
     os.remove(pure_name+"Joints")
+    os.remove(pure_name+"Indices")
 
 
     progress(1.0, None, "OBJ Export finished. Output file: %s" % filepath)

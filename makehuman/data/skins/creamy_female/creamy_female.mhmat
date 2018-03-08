@@ -61,7 +61,7 @@ shaderConfig ambientOcclusion True
 
 shaderConfig normal False
 
-shaderConfig bump True
+shaderConfig bump False
 
 shaderConfig displacement False
 

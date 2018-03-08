@@ -62,7 +62,7 @@ class ExporterMhx2(Exporter):
         cfg.useExpressions    = self.useExpressions.selected
         cfg.usePoses          = self.usePoses.selected
         cfg.feetOnGround      = self.feetOnGround.selected
-        cfg.scale,cfg.unit    = self.taskview.getScale()
+        #cfg.scale,cfg.unit    = self.taskview.getScale()
 
         return cfg
 

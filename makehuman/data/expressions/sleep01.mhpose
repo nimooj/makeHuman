@@ -8,7 +8,7 @@
     "author": "MakeHuman Team", 
     "unit_poses": {
         "LeftUpperLidClosed": 1.0, 
-        "JawDrop": 0.065, 
+        "JawDrop": 0.0, 
         "RightUpperLidClosed": 1.0
     }, 
     "homepage": "http://www.makehuman.org", 
