@@ -153,13 +153,22 @@ def loadObjFile(path, obj = None):
     return obj
 
 
-def splitSections(filepath, filename, meshes, crotch, joints, config=None):
+def splitSections(filepath, filename, meshes, joints, config=None, filterMaskedFaces=True):
     vertices = []
 
     if config and config.feetOnGround:
         offset = config.offset
     else:
         offset = [0, 0, 0]
+
+    scale = config.scale if config is not None else 1.0
+
+    if filterMaskedFaces:
+        print "filterMaskedFaces"
+        meshes = [m.clone(scale=scale, filterMaskedVerts=True) for m in meshes]
+    else:
+        # Unfiltered
+        meshes = [m.clone(scale=scale, filterMaskedVerts=False) for m in meshes]
 
 
     f_path = os.path.join(filepath, "..\\" + filename + "vertices.txt")
@@ -222,6 +231,37 @@ def splitSections(filepath, filename, meshes, crotch, joints, config=None):
     v3 = p3 - p1
     l_diag_normal =  np.cross(v2, v3)
 
+    pel_1 = [joints["Pelvis Center"][0], joints["Pelvis Center"][1], joints["Pelvis Center"][2] - 1]
+    pel_2 = [joints["Pelvis Center"][0], joints["Pelvis Center"][1], joints["Pelvis Center"][2] + 1]
+    p1 = np.array(joints["Pelvis Center"])
+    p2 = np.array(pel_1)
+    p3 = np.array(pel_2)
+    v2 = p2 - p1
+    v3 = p3 - p1
+
+    flatten = []
+    crotch = -1.0
+    for mesh in meshes:
+        # Get max Y val
+        for co in mesh.coord:
+            l = str(tuple(co + offset))
+            l = l.replace('(', '')
+            l = l.replace(')', '')
+            sx, sy, sz = l.split(', ')
+            x = float(sx)
+            y = float(sy)
+            z = float(sz)
+
+            #if x >= -0.0001 and x <= 0.0001:
+            if abs(x) < 0.000001:
+                flatten.append(y)
+
+    flatten.sort()
+    crotch = flatten[0]
+
+    print "Crotch in split: "
+    print crotch
+
     for mesh in meshes:
         for co in mesh.coord:
             tt = tuple(co + offset)
@@ -231,8 +271,9 @@ def splitSections(filepath, filename, meshes, crotch, joints, config=None):
 
             vert = np.array([x, y, z])
 
+
             # Head
-            if y >= joints["Head Center"][1] and x < joints["Left Shoulder"][0] and x > joints["Right Shoulder"][0]:
+            if y >= joints["Head Center"][1]-0.5 and x < joints["Left Shoulder"][0] and x > joints["Right Shoulder"][0]:
                 if not flag[10]: # First access
                     h.append("Name=Head\n")
                     h.append("") # Node=??\n
@@ -242,7 +283,7 @@ def splitSections(filepath, filename, meshes, crotch, joints, config=None):
                 #h_c += 1
 
             # Neck
-            elif y < joints["Head Center"][1] and y >= joints["Side Neck level"][1]:
+            elif y < joints["Head Center"][1]-0.5 and y >= joints["Neck Center"][1]:
                 if not flag[11]:
                     n.append("Name=Neck\n")
                     n.append("")
@@ -392,19 +433,6 @@ def splitSections(filepath, filename, meshes, crotch, joints, config=None):
     rf_c = len(rf) - 2
     s_c = len(s) - 2
 
-    print "head: " + str(h_c)
-    print "neck: " + str(n_c)
-    print "torso: " + str(t_c)
-    print "left arm: " + str(la_c)
-    print "left hand: " + str(lh_c)
-    print "left leg: " + str(ll_c)
-    print "left foot: " + str(lf_c)
-    print "right arm: " + str(ra_c)
-    print "right hand: " + str(rh_c)
-    print "right leg: " + str(rl_c)
-    print "right foot: " + str(rf_c)
-    print "skirt: " + str(s_c)
-
     h[1] = "Node=" + str(h_c) + "\n"
     n[1] = "Node=" + str(n_c) + "\n"
     t[1] = "Node=" + str(t_c) + "\n"
@@ -422,14 +450,13 @@ def splitSections(filepath, filename, meshes, crotch, joints, config=None):
 
     f.close()
 
-    #c_path = os.path.join(filepath, "..\\" + filename + "Indices")
-    #c = open(c_path, "w")
     c = open(filename+"Indices", "w")
     c.write("Part=12\n")
     for l in total:
         c.write(l)
 
     c.close()
+    return crotch
 
 
 #def writeObjFile(path, meshes, writeMTL=True, config=None, filterMaskedFaces=True):
@@ -442,12 +469,8 @@ def writeObjFile(path, meshes, filepath, writeMTL=True, config=None, filterMaske
     else:
         fp = open(path, 'w', encoding="utf-8")
 
-
     min_y = 0
     max_y = 0
-    min_x = 0
-    max_x = 0
-    crotch_y = -1.0
 
 
     fp.write(
@@ -460,31 +483,27 @@ def writeObjFile(path, meshes, filepath, writeMTL=True, config=None, filterMaske
 
     scale = config.scale if config is not None else 1.0
 
-    # Scale and filter out masked faces and unused verts
-    if filterMaskedFaces:
-        meshes = [m.clone(scale=scale, filterMaskedVerts=True) for m in meshes]
-    else:
-        # Unfiltered
-        meshes = [m.clone(scale=scale, filterMaskedVerts=False) for m in meshes]
-
     if config and config.feetOnGround:
         offset = config.offset
     else:
         offset = [0,0,0]
 
-#    f = open(filepath, "w")
 
-    flatten = []
+    if filterMaskedFaces:
+        print "filterMaskedFaces"
+        meshes = [m.clone(scale=scale, filterMaskedVerts=True) for m in meshes]
+    else:
+        # Unfiltered
+        meshes = [m.clone(scale=scale, filterMaskedVerts=False) for m in meshes]
 
     # Vertices
     for mesh in meshes:
         fp.write("".join( ["v %.4f %.4f %.4f\n" % tuple(co + offset) for co in mesh.coord] ))
-#        f.write("".join( ["%.3f %.3f %.3f\n" % tuple(co + offset) for co in mesh.coord]))
 
+    flatten = []
+    for mesh in meshes:
         # Get max Y val
         for co in mesh.coord:
-            #print "mesh coord\n"
-            #print str(tuple(co + offset))
             l = str(tuple(co + offset))
             l = l.replace('(', '')
             l = l.replace(')', '')
@@ -493,23 +512,12 @@ def writeObjFile(path, meshes, filepath, writeMTL=True, config=None, filterMaske
             y = float(sy)
             z = float(sz)
 
-            if x >= -0.0001 and x <= 0.0001:
-                '''
-                if crotch_y == -1.0:
-                    crotch_y = y
-                if y < crotch_y:
-                    crotch_y = y
-                '''
+            #if x >= -0.0001 and x <= 0.0001:
+            if abs(x) < 0.000001:
                 flatten.append(y)
-
-            if x < min_x:
-                min_x = x
-            if x > max_x:
-                max_x = x
 
             if y < min_y:
                 min_y = y
-                crotch_y
             if y > max_y:
                 max_y = y
 
@@ -520,30 +528,6 @@ def writeObjFile(path, meshes, filepath, writeMTL=True, config=None, filterMaske
     flatten.sort()
     crotch_y = flatten[0]
     centering = (min_y + max_y)/2
-    #crotch_y -= centering
-    #crotch_y *= 100
-
-    '''
-    for i in flatten:
-        x = i[0]
-        y = i[1]
-
-        if crotch_y == -1.0:
-            crotch_y = y
-
-        if y < crotch_y:
-            crotch_y = y
-    '''
-
-    '''
-    y = min_y
-    x = (min_x + max_x)/2
-    while True:
-        if 
-        y += 0.1
-    '''
-
-
 
     # Vertex normals
     if config is None or config.useNormals:
@@ -607,7 +591,8 @@ def writeObjFile(path, meshes, filepath, writeMTL=True, config=None, filterMaske
         fp.close()
 
     
-    return [centering, crotch_y]
+#    return [centering, crotch_y]
+    return centering
 
 
 #

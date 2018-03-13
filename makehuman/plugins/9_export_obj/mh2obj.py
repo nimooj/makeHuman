@@ -101,10 +101,14 @@ def exportObj(filepath, config=None):
 
 
     #centering, crotch_y = wavefront.writeObjFile(filepath, meshes, True, config, filterMaskedFaces=not config.hiddenGeom)
-    centering, crotch_y = wavefront.writeObjFile(filepath, meshes, os.path.join(filepath, "..\\" + pure_name + "vertices.txt"), True, config, filterMaskedFaces=not config.hiddenGeom)
+    print "before"
+    print meshes[0]
+    centering = wavefront.writeObjFile(filepath, meshes, os.path.join(filepath, "..\\" + pure_name + "vertices.txt"), True, config, filterMaskedFaces=not config.hiddenGeom)
+    print "after"
+    print meshes[0]
 
     joints = exportJoints(human, filepath, pure_name, centering)
-    wavefront.splitSections(filepath, pure_name, meshes, crotch_y, joints, config)
+    crotch_y = wavefront.splitSections(filepath, pure_name, meshes, joints, config, filterMaskedFaces=not config.hiddenGeom)
 
     crotch_y -= centering
     crotch_y *= 100
