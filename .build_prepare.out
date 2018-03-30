@@ -1,5 +1,5 @@
 MH source export
-  version:  1.2.0 (r? UNKNOWN)
+  version:  1.2.0
   revision: ? (UNKNOWN)
-  path:     E:\MakeHuman\MakeHuman-edit\makehuman-unstable_export_win32
-  type:     NIGHTLY
+  path:     E:\MakeHuman\MakeHuman-edit\mh_export_win32
+  type:     RELEASE

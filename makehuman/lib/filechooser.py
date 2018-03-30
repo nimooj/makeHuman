@@ -38,6 +38,7 @@ Abstract
 A Qt based filechooser widget.
 """
 
+print "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!FILECHOOSER CALLED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 import os
 
 from PyQt4 import QtCore, QtGui

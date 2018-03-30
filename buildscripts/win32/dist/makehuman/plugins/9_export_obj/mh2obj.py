@@ -43,147 +43,27 @@ import numpy as np
 import win32api, win32gui, win32con
 import psutil
 import json
-import skeleton
+import bvh
+from core import G
 
-#
-#    exportObj(human, filepath, config):
-#
+def exportJoints(human, filepath, filename, centering):
+    #path = os.path.join(filepath, filename+"joints.txt")
+    #path2 = os.path.join(filepath, filename+"jointNames.txt")
 
-jointGroupNames = []
-jointPositions = []
+    if not human.getSkeleton():
+        G.app.prompt('Error', 'You did not select a skeleton from the library.', 'OK')
+        return
 
-def exportTargets(human, filepath, filename):
-    path = os.path.join(filepath, filename+"l-leg_verts.txt")
+    skel = human.getSkeleton()
+    b = bvh.BVH()
+    joints = {}
 
-    f = open(path, "w")
-    t = open("data/targets/armslegs/l-leg-valgus-decr.target", "r")
-
-    n = 0
-
-    while True:
-        l = t.readline()
-        if not l: break
-
-        l = l.split()
-
-        if l[0] != "#":
-            n += 1
-            f.write(str(l[0]) + "\n")
-
-    f.write("Total: " + str(n))
-
-    f.close()
-
-def exportJoints(human, filepath, filename):
-    path = os.path.join(filepath, filename+"joints.txt")
-    path2 = os.path.join(filepath, filename+"jointNames.txt")
-
-    f = open(path, "w")
-    o = open(path2, "w")
-
-    jointGroupNames = [ group.name for group in human.meshData.faceGroups if group.name.startswith('joint-') ]
-
-    for group in human.meshData.faceGroups:
-        o.write(group.name + "\n")
-
-
-    #for g in jointGroupNames:
-        #o.write(g + "\n")
-
-
-    if human.getSkeleton():
-        jointGroupNames += human.getSkeleton().joint_pos_idxs.keys()
-        for groupName in jointGroupNames:
-            jointPositions.append(human.getSkeleton().getJointPosition(groupName, human))
+    if human.isPosed():
+        joints = b.fromObjSkeleton(skel, filepath, filename, centering, human.getActiveAnimation())
     else:
-        for groupName in jointGroupNames:
-            jointPositions.append(skeleton._getHumanJointPosition(human, groupName))
+        joints = b.fromObjSkeleton(skel, filepath, filename, centering)
 
-    for c in jointPositions:
-        f.write(str(c) + "\n")
-
-    '''
-
-    j = human.getJoints()
-
-    for fg_name in j:
-        p = human.getJointPosition(fg_name)
-        o.write(fg_name + "\n")
-        f.write(str(p) + "\n")
-        #print p
-        print human.getSkeleton().getJointPosition(fg_name, human)
-    '''
-
-    o.close()
-    f.close()
-
-def exportLandmarks(human, filepath, filename):
-    path = os.path.join(filepath, filename+"landmarks.txt")
-
-    j = human.getJoints()
-    f = open(path, "w")
-
-    for j_name in j:
-        #if ("head" in j_name) | ("neck" in j_name) | ("elbow" in j_name) | ("shoulder" in j_name) | ("ground" in j_name) | ("calvice" in j_name):
-        if ("neck" in j_name) | ("r-shoulder" in j_name) | ("joint-r-hand" == j_name) | ("pelvis" in j_name) | ("spine-3" in j_name) :
-           # f.write(j_name + " ")
-            p = human.getJointPosition(j_name)
-            f.write(str(p) + "\n")
-
-    f.close()
-
-
-def exportCollisionVolume(human, filepath, filename):
-    path = os.path.join(filepath, filename+"collisionvolume.txt")
-
-    j = human.getJoints()
-    f = open(path, "w")
-    #l_path = os.path.join(filepath, "l_hand.txt")
-   # l = open(l_path, "w")
-   # r_path = os.path.join(filepath, "r_hand.txt")
-   # r = open(r_path, "w")
-
-    # Hand
-    '''
-    r_hand = {}
-    l_hand = {}
-    for j_name in j:
-        if ("l-finger" in j_name) | ("l-hand" in j_name) :
-            p = human.getJointPosition(j_name)
-            l_hand[j_name] = p
-            l.write(j_name + " ")
-            l.write(str(p) + "\n")
-
-        if ("r-finger" in j_name) | ("r-hand" in j_name) :
-            p = human.getJointPosition(j_name)
-            r_hand[j_name] = p
-            r.write(j_name + " ")
-            r.write(str(p) + "\n")
-
-    l.close()
-    r.close()
-    '''
-    f.close()
-
-
-
-def exportBoundingBox(human, filepath, filename):
-    path = os.path.join(filepath, filename+"boundingsurface.txt")
-
-    j = human.getJoints()
-    f = open(path, "w")
-    rs = [0, 0, 0]
-    rh = [0, 0, 0]
-
-    for j_name in j:
-        if "r-shoulder" in j_name :
-            rs = human.getJointPosition(j_name)
-        if j_name == "joint-r-hand":
-            rh = human.getJointPosition(j_name)
-
-
-
-    f.close()
+    return joints
 
 
 def exportObj(filepath, config=None):
@@ -196,6 +76,7 @@ def exportObj(filepath, config=None):
 
     # root dir
     root = filepath.replace(filename, "")
+    height = 0
 
     progress(0, 0.3, "Collecting Objects")
     objects = human.getObjects(excludeZeroFaceObjs=not config.hiddenGeom)
@@ -214,9 +95,23 @@ def exportObj(filepath, config=None):
             m.calcNormals()
             m.updateIndexBuffer()
 
+    pure_name = filename.replace(".obj", "")
     progress(0.3, 0.99, "Writing Objects")
-    #wavefront.writeObjFile(filepath, meshes, True, config, filterMaskedFaces=not config.hiddenGeom)
-    wavefront.writeObjFile(filepath, meshes, os.path.join(root, filename.replace(".obj", "") + "vertices.txt"), True, config, filterMaskedFaces=not config.hiddenGeom)
+
+
+
+    #centering, crotch_y = wavefront.writeObjFile(filepath, meshes, True, config, filterMaskedFaces=not config.hiddenGeom)
+    print "before"
+    print meshes[0]
+    centering = wavefront.writeObjFile(filepath, meshes, os.path.join(filepath, "..\\" + pure_name + "vertices.txt"), True, config, filterMaskedFaces=not config.hiddenGeom)
+    print "after"
+    print meshes[0]
+
+    joints = exportJoints(human, filepath, pure_name, centering)
+    crotch_y = wavefront.splitSections(filepath, pure_name, meshes, joints, config, filterMaskedFaces=not config.hiddenGeom)
+
+    crotch_y -= centering
+    crotch_y *= 100
 
     #if 'Anaconda Prompt (2)' in win32gui.GetWindowText(0xffff):
     # print win32gui.GetWindowText(0xffff)
@@ -226,25 +121,100 @@ def exportObj(filepath, config=None):
     # print p
     # print p[0].pid
 
+    #print  "before crotch_y: " + str(crotch_y)
+    #print "centering: " + str(centering)
+    #print  "after crotch_y: " + str(crotch_y)
+
+   # crotch_y = (crotch_y*100-centering)
+    print crotch_y
     r = win32api.SendMessage(win32con.HWND_BROADCAST, 56789, 0, 0)
     #win32api.RegisterWindowMessage('56789')
 
     cpid = win32api.GetCurrentProcessId();
 
 
-    path = os.path.join(root, filename.replace(".obj", "")+ "meshes.txt")
+    path = os.path.join(root, pure_name+ ".BodyInfo")
+
+    bl = open(pure_name + "Landmarks", "r")
+    bj = open(pure_name + "Joints", "r")
+    bv = open(pure_name + "Indices", "r")
+    #bv = open("common_idx", "r")
+
     f = open(path, "w")
+
+    data = [None] * 20
+    data[0] = "Landmark=6\n"
+    # initial write
+    while True:
+        l = bl.readline()    
+        if not l: break
+
+        #f.write(l)
+        if "Side Neck" in l:
+            data[1] = l
+        if "Shoulder" in l: 
+            data[2] = l
+        if "Waist" in l:
+            data[3] = l
+        #if "Crotch" in l:
+   #         data[4] = "Crotch Level=" + str(crotch_y) + "\n"
+        if "Wrist" in l:
+            data[5] = l
+        if "Ankle" in l:
+            data[6] = l
+
+    data[4] = "Crotch Level=" + str(crotch_y) + "\n"
+    data[7] = "Joint=12\n"
+    # init write
+    while True:
+        l = bj.readline()
+        if not l: break
+        #f.write(l)
+        if "Head Center" in l:
+            data[8] = l
+        if "Neck Center" in l:
+            data[9] = l
+        if "Shoulder Center"  in l:
+            data[10] = l
+        if "Right Shoulder" in l:
+            data[11] = l
+        if "Left Shoulder" in l:
+            data[12] = l
+        if "Right Wrist" in l:
+            data[13] = l
+        if "Left Wrist" in l:
+            data[14] = l
+        if "Pelvis Center" in l:
+            data[15] = l
+        if "Right Pelvis" in l:
+            data[16] = l
+        if "Left Pelvis" in l:
+            data[17] = l
+        if "Right Ankle" in l:
+            data[18] = l
+        if "Left Ankle" in l:
+            data[19] = l
+
+
+    s = ''.join(str(e) for e in data)
+    f.writelines(s)
+    while True:
+        l = bv.readline()
+        if not l: break
+        f.write(l)
+
     f.close()
 
-    exportTargets(human, root, filename.replace(".obj", ""))
-    exportJoints(human, root, filename.replace(".obj", ""))
-    exportLandmarks(human, root, filename.replace(".obj", ""))
-    exportCollisionVolume(human, root, filename.replace(".obj", ""))
-    exportBoundingBox(human, root, filename.replace(".obj", ""))
+    bl.close()
+    bj.close()
+    bv.close()
+
+    os.remove(pure_name+"Landmarks")
+    os.remove(pure_name+"Joints")
+    os.remove(pure_name+"Indices")
 
 
     progress(1.0, None, "OBJ Export finished. Output file: %s" % filepath)
 
     # Kill MakeHuman
-    # os.system("taskkill /PID " + str(p[0].pid))
-    os.system("taskkill /PID " + str(cpid))
+    #os.system("taskkill /PID " + str(cpid))

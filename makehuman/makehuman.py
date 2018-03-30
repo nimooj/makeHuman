@@ -46,9 +46,10 @@ import os
 import re
 import subprocess
 
+
 ## Version information #########################################################
 __version__ = "1.2.0"                   # Major, minor and patch version number
-release = False                         # False for nightly
+release = True                   # False for nightly
 versionSub = ""                         # Short version description
 meshVersion = "hm08"                    # Version identifier of the basemesh
 ################################################################################
@@ -383,13 +384,21 @@ def get_platform_paths():
         stderr_filename = os.path.join(home, "makehuman-error.txt")
 
 def redirect_standard_streams():
+    print "r1"
     from codecs import open
+    print "r2"
     import locale
+    print "r3"
     encoding = locale.getpreferredencoding()
-    if stdout_filename:
-        sys.stdout = open(stdout_filename, "w", encoding=encoding, errors="replace")
-    if stderr_filename:
-        sys.stderr = open(stderr_filename, "w", encoding=encoding, errors="replace")
+    print "r4"
+    #print stdout_filename
+    #print stderr_filename
+    #if stdout_filename:
+        #print "r5"
+    #    sys.stdout = open(stdout_filename, "w", encoding=encoding, errors="replace")
+    #if stderr_filename:
+        #print "r6"
+    #    sys.stderr = open(stderr_filename, "w", encoding=encoding, errors="replace")
 
 def close_standard_streams():
     sys.stdout.close()
@@ -783,8 +792,6 @@ makes use of.\n"""
 
 
 def main():
-    print getCopyrightMessage(short=True) + "\n"
-    
     
     try:
         set_sys_path()
@@ -793,6 +800,7 @@ def main():
         G.args = args
         make_user_dir()
         get_platform_paths()
+
         redirect_standard_streams()
         get_hg_revision()
         os.environ['MH_VERSION'] = getVersionStr()
@@ -819,11 +827,17 @@ def main():
         # Suppress runtime errors
         numpy.seterr(all = 'ignore')
 
+    print "after numpy import"
+
     # Here pyQt and PyOpenGL will be imported
-    from mhmain import MHApplication
+    from mhmain import MHApplication #!!! pyQT imported here somewhere
+
+    print "after mhmain MHApplication import"
     application = MHApplication()
+    print "after MHApplication instance declaration"
     application.run()
 
+    print "after application run"
     #import cProfile
     #cProfile.run('application.run()')
 

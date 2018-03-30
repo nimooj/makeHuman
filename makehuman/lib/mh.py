@@ -36,6 +36,10 @@ Abstract
 Python compatibility layer replacing the old C functions of MakeHuman.
 """
 
+from qtui import Keys, Buttons, Modifiers, Application
+from qtui import callAsyncThread, setShortcut
+from qtui import getSaveFileName, getOpenFileName, getExistingDirectory
+
 from core import G
 from getpath import getPath, getDataPath, getSysDataPath, getSysPath
 from makehuman import getVersion, getVersionStr, getBasemeshVersion, getShortVersion, isRelease, isBuild, getVersionDigitsStr, getCopyrightMessage, getAssetLicense, getThirdPartyLicenses, getSoftwareLicense, getCredits
@@ -47,9 +51,6 @@ from texture import Texture, getTexture, reloadTextures
 from shader import Shader
 from camera import Camera, OrbitalCamera
 
-from qtui import Keys, Buttons, Modifiers, Application
-from qtui import callAsyncThread, setShortcut
-from qtui import getSaveFileName, getOpenFileName, getExistingDirectory
 
 from inifile import parseINI, formatINI
 

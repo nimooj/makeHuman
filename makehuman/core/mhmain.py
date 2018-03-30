@@ -36,13 +36,14 @@ Abstract
 Main application GUI component.
 """
 
+import mh
 import sys
 import os
 import glob
 import imp
 
 from core import G
-import mh
+#import mh
 from progress import Progress
 import files3d
 import gui3d
@@ -148,6 +149,7 @@ class SymmetryAction(gui3d.Action):
 
 class MHApplication(gui3d.Application, mh.Application):
     def __init__(self):
+        print "MHApplication in mhmain.py"
         if G.app is not None:
             raise RuntimeError('MHApplication is a singleton')
         G.app = self
@@ -764,6 +766,7 @@ class MHApplication(gui3d.Application, mh.Application):
 
         if sys.platform.startswith("darwin"):
             self.splash.resize(0,0) # work-around for mac splash-screen closing bug
+
 
         self.mainwin.show()
         self.splash.hide()

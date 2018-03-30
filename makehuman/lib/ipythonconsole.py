@@ -38,6 +38,7 @@ Abstract
 
 Ipython qtconsole for embedding in MakeHuman
 """
+print "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!IPYTHONCONSOLE CALLED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 
 import os
 import imp

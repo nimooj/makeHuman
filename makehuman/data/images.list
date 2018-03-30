@@ -1,3 +1,6 @@
+data/clothes/crudebra/creamy_female_diffuse.png
+data/clothes/crudebra/CrudeBraDiffuse.png
+data/clothes/crudeunderwear/CrudeFemaleUnderwearDiffuse.png
 data/clothes/fedora01/materials/fedora_displacement.png
 data/clothes/fedora01/materials/fedora_normal.png
 data/clothes/fedora01/materials/fedora_texture.png
@@ -68,6 +71,8 @@ data/clothes/shoes06/shoes06_diffuse.png
 data/clothes/short01/short01_basic_diffuse.png
 data/clothes/short01/short01_black_diffuse.png
 data/clothes/short01/short01_normals.png
+data/clothes/straplessbodysuit/straplessbodysuit.png
+data/clothes/straplessbodysuit/straplessbodysuit_normals.png
 data/clothes/suit01hres/suit01_diffuse.png
 data/clothes/suit01hres/suit01_normals.png
 data/clothes/suit01lres/suit01lres_diffuse.png
@@ -121,12 +126,14 @@ data/hair/fhair01/materials/diffuse_black.png
 data/hair/fhair01/materials/diffuse_blonde.png
 data/hair/fhair01/materials/normals.png
 data/hair/hairtype02/afro.png
+data/hair/littleright_hair_bobcut/hairtex.png
 data/hair/long01/long01_diffuse.png
 data/hair/mhair01/materials/male01_diffuse_black.png
 data/hair/mhair01/materials/male01_diffuse_blonde.png
 data/hair/mhair01/materials/male01_diffuse_red.png
 data/hair/mhair02/materials/male02_diffuse_black.png
 data/hair/ponytail01/ponytail01_diffuse.png
+data/hair/short-hair-black/short-hair-black.png
 data/hair/short01/short01_diffuse.png
 data/hair/short02/short02_diffuse.png
 data/hair/short02/short02_normal.png
@@ -194,6 +201,7 @@ data/skins/textures/old_lightskinned_female_diffuse.png
 data/skins/textures/old_lightskinned_female_diffuse2.png
 data/skins/textures/old_lightskinned_male_diffuse.png
 data/skins/textures/old_lightskinned_male_diffuse2.png
+data/skins/textures/white.png
 data/skins/textures/young-caucasion-female-EHSPC-001.png
 data/skins/textures/young_caucasian_female_special_suit.png
 data/skins/textures/young_caucasian_male_special_suit.png

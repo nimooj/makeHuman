@@ -37,6 +37,7 @@ Abstract
 
 A widget for selecting the human object or any of the proxies attached to it.
 """
+print "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!HUMANOBJCHOOSER CALLED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 
 from PyQt4 import QtCore, QtGui
 

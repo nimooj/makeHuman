@@ -35,6 +35,7 @@ Abstract
 
 Common base class for all proxy chooser libraries.
 """
+print "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!PROXYCHOOSER CALLED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 
 import os
 import gui3d

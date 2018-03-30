@@ -38,6 +38,7 @@ Abstract
 Definitions for combining and manipulating subtextures
 as multi-layered images.
 """
+print "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!SUBTEXTURE CALLED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 
 from image import Image
 from cache import Cache
