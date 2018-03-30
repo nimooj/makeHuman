@@ -35,7 +35,6 @@ Abstract
 TODO
 """
 
-print "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!QTUI CALLED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 import sys
 import os
 import log

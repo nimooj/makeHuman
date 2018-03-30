@@ -149,7 +149,6 @@ class SymmetryAction(gui3d.Action):
 
 class MHApplication(gui3d.Application, mh.Application):
     def __init__(self):
-        print "MHApplication in mhmain.py"
         if G.app is not None:
             raise RuntimeError('MHApplication is a singleton')
         G.app = self

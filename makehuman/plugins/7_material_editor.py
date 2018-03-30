@@ -35,7 +35,6 @@ Abstract
 
 TODO
 """
-print "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!MATERIALEDITOR CALLED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 
 import os
 import gui3d
