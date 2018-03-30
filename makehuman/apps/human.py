@@ -79,7 +79,7 @@ class Human(guicommon.Object, animation.AnimatedMesh):
         self.bodyZones = ['l-eye','r-eye', 'jaw', 'nose', 'mouth', 'head', 'neck', 'torso', 'hip', 'pelvis', 'r-upperarm', 'l-upperarm', 'r-lowerarm', 'l-lowerarm', 'l-hand',
                           'r-hand', 'r-upperleg', 'l-upperleg', 'r-lowerleg', 'l-lowerleg', 'l-foot', 'r-foot', 'ear']
 
-        self.material = material.fromFile(getSysDataPath('skins/default.mhmat'))
+        self.material = material.fromFile(getSysDataPath('skins/young_asian_female/young_asian_female.mhmat'))
         self._defaultMaterial = material.Material().copyFrom(self.material)
 
         # Init with no user-selected skeleton
