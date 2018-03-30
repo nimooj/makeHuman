@@ -46,13 +46,19 @@ import json
 import bvh
 from core import G
 
+import skeleton
+import mh
+
 def exportJoints(human, filepath, filename, centering):
     #path = os.path.join(filepath, filename+"joints.txt")
     #path2 = os.path.join(filepath, filename+"jointNames.txt")
 
     if not human.getSkeleton():
-        G.app.prompt('Error', 'You did not select a skeleton from the library.', 'OK')
-        return
+        #G.app.prompt('Error', 'You did not select a skeleton from the library.', 'OK')
+        #return
+
+        human.skeleton = skeleton.load(mh.getSysDataPath('rigs/default.mhskel'), human.meshData)
+        human.skeleton.dirty = True
 
     skel = human.getSkeleton()
     b = bvh.BVH()
@@ -101,11 +107,7 @@ def exportObj(filepath, config=None):
 
 
     #centering, crotch_y = wavefront.writeObjFile(filepath, meshes, True, config, filterMaskedFaces=not config.hiddenGeom)
-    print "before"
-    print meshes[0]
     centering = wavefront.writeObjFile(filepath, meshes, os.path.join(filepath, "..\\" + pure_name + "vertices.txt"), True, config, filterMaskedFaces=not config.hiddenGeom)
-    print "after"
-    print meshes[0]
 
     joints = exportJoints(human, filepath, pure_name, centering)
     crotch_y = wavefront.splitSections(filepath, pure_name, meshes, joints, config, filterMaskedFaces=not config.hiddenGeom)
@@ -121,12 +123,6 @@ def exportObj(filepath, config=None):
     # print p
     # print p[0].pid
 
-    #print  "before crotch_y: " + str(crotch_y)
-    #print "centering: " + str(centering)
-    #print  "after crotch_y: " + str(crotch_y)
-
-   # crotch_y = (crotch_y*100-centering)
-    print crotch_y
     r = win32api.SendMessage(win32con.HWND_BROADCAST, 56789, 0, 0)
     #win32api.RegisterWindowMessage('56789')
 
