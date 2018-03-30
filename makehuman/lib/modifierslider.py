@@ -35,7 +35,6 @@ Abstract
 
 GUI slider widgets for controlling modifiers.
 """
-print "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!MODIFIERSLIDER CALLED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 
 import gui
 import targets

@@ -36,8 +36,6 @@ Abstract
 TODO
 """
 
-print "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!QTGUI CALLED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-
 import sys
 import os
 import re
