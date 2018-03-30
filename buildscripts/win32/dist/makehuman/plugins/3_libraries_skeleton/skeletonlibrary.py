@@ -38,7 +38,6 @@ to be exported.
 This skeleton is not used within MakeHuman, as all posing and animation
 is applied to the base skeleton, which is the default or reference skeleton.
 """
-print "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!SKELETONLIBRARY CALLED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 
 import mh
 import gui
