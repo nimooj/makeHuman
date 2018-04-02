@@ -509,7 +509,11 @@ class MHApplication(gui3d.Application, mh.Application):
             if fname[0] != "_":
                 folder = os.path.join("plugins", fname)
                 if os.path.isdir(folder) and ("__init__.py" in os.listdir(folder)):
-                    pluginsToLoad.append(folder)
+                    if "9" in folder:
+                        if "obj" in folder:
+                            pluginsToLoad.append(folder)
+                    else:
+                        pluginsToLoad.append(folder)
 
         pluginsToLoad.sort()
 
