@@ -394,10 +394,6 @@ class BVH():
         #bi_path = os.path.join(filepath, filename+"Landmarks")
         #bj_path = os.path.join(filepath, filename+"Joints")
 
-        j_path = os.path.join(filepath, "..\\" + filename+ "joints.txt")
-        j = open(j_path, "w")
-
-
         #bi = open(bi_path, "w")
         bi = open(filename+"Landmarks", "w")
         bi.write("Landmark=6\n")
@@ -405,9 +401,6 @@ class BVH():
         #bj = open(bj_path, "w")
         bj = open(filename+"Joints", "w")
         bj.write("Joints=12\n")
-
-        jn_path = os.path.join(filepath, "..\\" + filename+"JointNames.txt")
-        jn = open(jn_path, "w")
 
         clavicle = []
         joints = {}
@@ -455,8 +448,6 @@ class BVH():
             if ("spine03" in jointName):  # Waist level
                 bi.write("Waist Level=" + str((p[1]-centering)*100) + "\n")
                 joints["Waist level"] = [float(i) for i in p]
-                j.write(str(p) + "\n")
-                jn.write(jointName + "\n")
 
             if ("spine05" in jointName):  # Crotch level
                 #bi.write("Crotch Level=" + str((p[1]-centering)*100) + "\n")
@@ -468,8 +459,6 @@ class BVH():
                     bj.write("Pelvis Center=" + str(p[0]) + "," + str((p[1]-centering)*100) + "\n")
                     joints["Pelvis Center"] = [float(i) for i in p]
 
-                j.write(str(p) + "\n")
-                jn.write(jointName + "\n")
 
             if ("wrist" in jointName): # Wrist level
                 if ".L" in jointName:
@@ -479,28 +468,20 @@ class BVH():
                 elif ".R" in jointName:
                     bj.write("Right Wrist=" + str(p[0]*100) + "," + str((p[1]-centering)*100) + "\n")
                     joints["Right Wrist"] = [float(i) for i in p]
-                j.write(str(p) + "\n")
-                jn.write(jointName + "\n")
 
 
             if ("neck01" in jointName): # Neck Center level ... BOTTOM MOST
             #if ("neck02" in jointName): # Neck Center level
                 bj.write("Neck Center=" + str(p[0]*100) + "," + str((p[1]-centering)*100) + "\n")                    
                 joints["Neck Center"] = [float(i) for i in p]
-                jn.write(jointName + "\n")
                 joints["Side Neck level"] = [float(i) for i in p]
 
             if ("neck02" in jointName): # Side Neck level
                 bi.write("Side Neck Level=" + str((p[1]-centering)*100) + "\n")
-                j.write(str(p) + "\n")
-                j.write(str(p) + "\n")
-                jn.write(jointName + "\n")
 
             if ("neck03" in jointName): # Head Center ... TOP MOST
                 #bj.write("Head Center=" + str(0.00) + "," + str((p[1]-centering)*100) + "\n")
                 bj.write("Head Center=" + str(p[0]) + "," + str((p[1]-centering)*100) + "\n")
-                jn.write(jointName + "\n")
-                j.write(str(p) + "\n")
                 joints["Head Center"] = [float(i) for i in p]
 
             #if ("head" in jointName): 
@@ -513,8 +494,6 @@ class BVH():
                 elif ".R" in jointName:
                     bj.write("Right Ankle=" + str(p[0]*100) + "," + str((p[1]-centering)*100) + "\n")
                     joints["Right Ankle"] = [float(i) for i in p]
-                j.write(str(p) + "\n")
-                jn.write(jointName + "\n")
 
             if ("clavicle.R" == jointName): 
                 x, y, z = p
@@ -527,8 +506,6 @@ class BVH():
                     clavicle[0] /= 2
                     bj.write("Shoulder Center=" + str(clavicle[0]*100) + "," + str((clavicle[1]-centering)*100) + "\n")
                     joints["Shoulder Center"] = [float(i) for i in clavicle]
-                j.write(str(p) + "\n")
-                jn.write(jointName + "\n")
 
             if ("clavicle.L" == jointName): 
                 x, y, z = p
@@ -541,8 +518,6 @@ class BVH():
                     clavicle[0] /= 2
                     bj.write("Shoulder Center=" + str(clavicle[0]*100) + "," + str((clavicle[1]-centering)*100) + "\n")
                     joints["Shoulder Center"] = [float(i) for i in clavicle]
-                j.write(str(p) + "\n")
-                jn.write(jointName + "\n")
 
             if ("upperarm01" in jointName):
                 if ".L" in jointName:
@@ -552,8 +527,6 @@ class BVH():
                 elif ".R" in jointName:
                     bj.write("Right Shoulder=" + str(p[0]*100)+","+str((p[1]-centering)*100)+"\n")
                     joints["Right Shoulder"] = [float(i) for i in p]
-                jn.write(jointName + "\n")
-                j.write(str(p) + "\n")
 
             if ("upperleg01" in jointName):
                 if ".L" in jointName:
@@ -564,14 +537,10 @@ class BVH():
                     bj.write("Right Pelvis="+str(p[0]*100) + "," + str((p[1]- centering)*100) + "\n")
                     pelvis += p[0]
                     joints["Right Pelvis"] = [float(i) for i in p]
-                jn.write(jointName + "\n")
-                j.write(str(p) + "\n")
-
 
 
         bi.close()
         bj.close()
-        j.close()
 
         self.__cacheGetJoints()
         nonEndJoints = [ joint for joint in self.getJoints() if not joint.isEndConnector() ]
@@ -616,10 +585,6 @@ class BVH():
         for joint in self.getJoints():
             joint.calculateFrames()
 
-        for jj in joints:
-            jn.write(str(jj) + "\n")
-
-        jn.close()
         return joints
 
     def fromSkeleton(self, skel, animationTrack=None, dummyJoints=True):

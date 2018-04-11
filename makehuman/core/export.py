@@ -47,8 +47,11 @@ class Exporter(object):
 
     def __init__(self):
         self.group = "mesh"
-        self.fileExtension = ""
-        self.filter = 'All Files (*.*)'
+        #self.fileExtension = ""
+        #self.filter = 'All Files (*.*)'
+        # mj - set default filter to obj
+        self.fileExtension = "obj"
+        self.filter = "Wavefront (*.obj)"
         self.orderPriority = 10.0   # Priority that determines order of exporter in gui. Highest priority is on top.
 
     def build(self, options, taskview):
@@ -94,7 +97,7 @@ class ExportConfig(object):
 
     def selectedOptions(self, exporter):
         self.feetOnGround =         exporter.feetOnGround.selected
-        #self.scale,self.unit    = exporter.taskview.getScale()
+        self.scale,self.unit    = exporter.taskview.getScale()
         return self
 
 

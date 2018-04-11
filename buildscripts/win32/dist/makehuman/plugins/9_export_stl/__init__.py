@@ -80,7 +80,7 @@ class ExporterSTL(Exporter):
             mh2stl.exportStlBinary(filename("stl"), cfg)
 
 def load(app):
-    # app.addExporter(ExporterSTL())
+    #app.addExporter(ExporterSTL())
     return
 
 def unload(app):

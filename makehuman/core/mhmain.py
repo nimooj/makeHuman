@@ -500,7 +500,6 @@ class MHApplication(gui3d.Application, mh.Application):
         #self.getCategory("Rendering")
 
     def loadPlugins(self):
-
         # Load plugins not starting with _
         pluginsToLoad = glob.glob(mh.getSysPath(os.path.join("plugins/",'[!_]*.py')))
 
@@ -509,49 +508,81 @@ class MHApplication(gui3d.Application, mh.Application):
             if fname[0] != "_":
                 folder = os.path.join("plugins", fname)
                 if os.path.isdir(folder) and ("__init__.py" in os.listdir(folder)):
-                    if "9" in folder:
-                        if "obj" in folder:
-                            pluginsToLoad.append(folder)
-                    else:
-                        pluginsToLoad.append(folder)
+                    pluginsToLoad.append(folder)
 
         pluginsToLoad.sort()
 
         fprog = Progress(len(pluginsToLoad))
+        f=open("Plugins.txt", "w")
         for path in pluginsToLoad:
-            self.loadPlugin(path)
+            f.write(path + "\n")
+            self.loadPlugin(path, f)
             fprog.step()
+        f.close()
 
-    def loadPlugin(self, path):
-
+    def loadPlugin(self, path, file):
         try:
+            file.write("TRY loadPlugin\n")
             name, ext = os.path.splitext(os.path.basename(path))
             if name not in self.getSetting('excludePlugins'):
+                file.write("NOT IN EXCLUDEPLUGINS\n")
                 log.message('Importing plugin %s', name)
                 #module = imp.load_source(name, path)
 
                 module = None
                 fp, pathname, description = imp.find_module(name, ["plugins/"])
+                file.write("---find module name: " + str(fp) + "\n---find module path: " + str(pathname) + "\n")
+
                 try:
+                    file.write("BEFORE IMP.LOAD_MODULE\n")
                     module = imp.load_module(name, fp, pathname, description)
+                    print module
+                    file.write(str(module) + "\n")
+                    file.write("IMP.LOAD_MODULE\n")
                 finally:
+                    file.write("FINALLY\n")
                     if fp:
+                        file.write("FP CLOSE\n")
                         fp.close()
+                        file.write("AFTER FP CLOSE\n")
+
+
                 if module is None:
+                    file.write("MODULE IS NONE\n")
                     log.message("Could not import plugin %s", name)
                     return
 
-                self.modules[name] = module
-                log.message('Imported plugin %s', name)
-                log.message('Loading plugin %s', name)
-                module.load(self)
-                log.message('Loaded plugin %s', name)
+                boolVal = ("9" in name and "obj" in name)
+                file.write(str(boolVal) + "\n")
 
-                # Process all non-user-input events in the queue to make sure
-                # any callAsync events are run.
-                self.processEvents()
+                # mj - import only 9_export_obj for 9_ plugins
+                if ("9" not in name) or ("9" in name and "obj" in name):
+                    file.write("name : " + name + "\n")
+                    file.write("-------BEFORE MODULE ASSIGNMENT\n")
+
+                    self.modules[name] = module
+
+                    file.write("-------AFTER MODULE ASSIGNMENT\n")
+
+                    file.write(str(self.modules))
+                    file.write("\n")
+
+                    log.message('Imported plugin %s', name)
+                    log.message('Loading plugin %s', name)
+
+                    file.write("LOADING PLUGIN " + name + "\n\n")
+
+                    module.load(self)
+
+                    log.message('Loaded plugin %s', name)
+
+                    # Process all non-user-input events in the queue to make sure
+                    # any callAsync events are run.
+                    self.processEvents()
             else:
                 self.modules[name] = None
+
+
         except Exception, _:
             log.warning('Could not load %s', name, exc_info=True)
 

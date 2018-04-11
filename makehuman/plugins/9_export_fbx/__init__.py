@@ -115,7 +115,7 @@ class ExporterFBX(Exporter):
         return cfg
 
 def load(app):
-    # app.addExporter(ExporterFBX())
+    #app.addExporter(ExporterFBX())
     return
 
 def unload(app):

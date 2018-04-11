@@ -90,7 +90,6 @@ missing module named webcolors - imported by jsonschema._format
 missing module named isodate - imported by jsonschema._format
 missing module named strict_rfc3339 - imported by jsonschema._format
 missing module named rfc3987 - imported by jsonschema._format
-missing module named ElementC14N - imported by xml.etree.ElementTree
 missing module named docrepr - imported by IPython.core.interactiveshell
 missing module named pygments.formatters.LatexFormatter - imported by pygments.formatters, nbconvert.filters.highlight, nbconvert.preprocessors.latex
 missing module named pygments.lexers.Python3Lexer - imported by pygments.lexers, IPython.lib.lexers, qtconsole.pygments_highlighter
@@ -221,7 +220,6 @@ missing module named gestalt - imported by platform, E:\MakeHuman\MakeHuman-edit
 missing module named Carbon - imported by plistlib, E:\MakeHuman\MakeHuman-edit\mh_export_win32\makehuman\makehuman.py
 missing module named 'Carbon.Files' - imported by plistlib, E:\MakeHuman\MakeHuman-edit\mh_export_win32\makehuman\makehuman.py
 missing module named 'Carbon.File' - imported by plistlib, E:\MakeHuman\MakeHuman-edit\mh_export_win32\makehuman\makehuman.py
-missing module named _xmlplus - imported by xml, E:\MakeHuman\MakeHuman-edit\mh_export_win32\makehuman\makehuman.py
 missing module named java - imported by platform, E:\MakeHuman\MakeHuman-edit\mh_export_win32\makehuman\makehuman.py
 missing module named 'java.lang' - imported by platform, E:\MakeHuman\MakeHuman-edit\mh_export_win32\makehuman\makehuman.py, xml.sax._exceptions
 missing module named vms_lib - imported by platform, E:\MakeHuman\MakeHuman-edit\mh_export_win32\makehuman\makehuman.py
@@ -229,6 +227,13 @@ missing module named winreg.OpenKeyEx - imported by winreg, platform, E:\MakeHum
 missing module named winreg.QueryValueEx - imported by winreg, platform, E:\MakeHuman\MakeHuman-edit\mh_export_win32\makehuman\makehuman.py
 missing module named winreg.CloseKey - imported by winreg, platform, E:\MakeHuman\MakeHuman-edit\mh_export_win32\makehuman\makehuman.py
 missing module named winreg.HKEY_LOCAL_MACHINE - imported by winreg, platform, E:\MakeHuman\MakeHuman-edit\mh_export_win32\makehuman\makehuman.py
+missing module named psutil._psutil_posix - imported by psutil, psutil._pslinux, psutil._psosx, psutil._psbsd, psutil._pssunos, E:\MakeHuman\MakeHuman-edit\mh_export_win32\makehuman\makehuman.py
+missing module named _psutil_linux - imported by psutil, E:\MakeHuman\MakeHuman-edit\mh_export_win32\makehuman\makehuman.py
+missing module named psutil._psutil_osx - imported by psutil, psutil._psosx, E:\MakeHuman\MakeHuman-edit\mh_export_win32\makehuman\makehuman.py
+missing module named psutil._psutil_bsd - imported by psutil, psutil._psbsd, E:\MakeHuman\MakeHuman-edit\mh_export_win32\makehuman\makehuman.py
+missing module named _xmlplus - imported by xml, E:\MakeHuman\MakeHuman-edit\mh_export_win32\makehuman\makehuman.py
+missing module named ElementC14N - imported by xml.etree.ElementTree, E:\MakeHuman\MakeHuman-edit\mh_export_win32\makehuman\makehuman.py
+missing module named psutil._psutil_sunos - imported by psutil, psutil._pssunos, E:\MakeHuman\MakeHuman-edit\mh_export_win32\makehuman\makehuman.py
 missing module named grp - imported by shutil, tarfile, distutils.archive_util, E:\MakeHuman\MakeHuman-edit\mh_export_win32\makehuman\makehuman.py, pathlib2
 missing module named _sysconfigdata - imported by distutils.sysconfig, sysconfig, E:\MakeHuman\MakeHuman-edit\mh_export_win32\makehuman\makehuman.py
 missing module named 'OpenGL_accelerate.numpy_formathandler' - imported by OpenGL.arrays.numpymodule
@@ -256,7 +261,7 @@ missing module named termios - imported by getpass, tty, E:\MakeHuman\MakeHuman-
 missing module named EasyDialogs - imported by getpass, E:\MakeHuman\MakeHuman-edit\mh_export_win32\makehuman\makehuman.py
 missing module named _scproxy - imported by urllib, future.backports.urllib.request, E:\MakeHuman\MakeHuman-edit\mh_export_win32\makehuman\makehuman.py
 missing module named _dummy_threading - imported by dummy_threading, E:\MakeHuman\MakeHuman-edit\mh_export_win32\makehuman\makehuman.py
-missing module named pwd - imported by posixpath, getpass, shutil, tarfile, webbrowser, distutils.util, distutils.archive_util, E:\MakeHuman\MakeHuman-edit\mh_export_win32\makehuman\makehuman.py, pathlib2, netrc
+missing module named pwd - imported by posixpath, getpass, shutil, tarfile, webbrowser, distutils.util, distutils.archive_util, psutil, E:\MakeHuman\MakeHuman-edit\mh_export_win32\makehuman\makehuman.py, pathlib2, netrc
 missing module named org - imported by copy, E:\MakeHuman\MakeHuman-edit\mh_export_win32\makehuman\makehuman.py
 missing module named fcntl - imported by tempfile, subprocess, E:\MakeHuman\MakeHuman-edit\mh_export_win32\makehuman\makehuman.py, tornado.platform.posix, backports.shutil_get_terminal_size.get_terminal_size, prompt_toolkit.terminal.vt100_output, prompt_toolkit.eventloop.posix, subprocess32, zmq.eventloop.minitornado.platform.posix, gevent.os, gevent.fileobject, gevent.subprocess
 missing module named readline - imported by cmd, pdb, code, pstats, E:\MakeHuman\MakeHuman-edit\mh_export_win32\makehuman\makehuman.py, rlcompleter

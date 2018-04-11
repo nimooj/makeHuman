@@ -77,7 +77,7 @@ class ExporterOgre(Exporter):
         return cfg
 
 def load(app):
-    #app.addExporter(ExporterOgre())
+    #app.addExporter(ExporterOgre()
     return
 
 def unload(app):

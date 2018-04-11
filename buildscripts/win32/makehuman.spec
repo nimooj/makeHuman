@@ -146,7 +146,7 @@ qtHandle_hooks = exportPath( 'makehuman\lib\qtui.py' )
 
 a = Analysis([appExecutable] + i.getPluginFiles(),
              pathex= [ exportPath(p) for p in i.pathEx ],
-             hiddenimports=["skeleton_drawing"],
+             hiddenimports=["skeleton_drawing", "plugins/9_export_obj"],
              hookspath=None,
              runtime_hooks=[qtHandle_hooks]
              )
