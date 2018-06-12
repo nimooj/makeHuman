@@ -93,7 +93,7 @@ class PoseLibraryTaskView(gui3d.TaskView, filecache.MetadataCacher):
         self.filechooser.enableAutoRefresh(False)
 
         # Setting default pose to custom.bvh
-        gui3d.app.do(PoseAction("Change pose", self, self.currentPose, "data/poses\\custom.bvh"))
+        gui3d.app.do(PoseAction("Change pose", self, self.currentPose, "data/poses/custom.bvh"))
 
         @self.filechooser.mhEvent
         def onFileSelected(filename):
