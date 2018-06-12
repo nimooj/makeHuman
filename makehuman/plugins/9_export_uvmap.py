@@ -65,8 +65,6 @@ class ExporterUV(Exporter):
 
 def load(app):
     #app.addExporter(ExporterUV())
-    f = open("exportUVMAP.txt", "w")
-    f.close()
     return
 
 def unload(app):

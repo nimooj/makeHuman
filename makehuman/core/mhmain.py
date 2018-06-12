@@ -513,72 +513,45 @@ class MHApplication(gui3d.Application, mh.Application):
         pluginsToLoad.sort()
 
         fprog = Progress(len(pluginsToLoad))
-        f=open("Plugins.txt", "w")
         for path in pluginsToLoad:
-            f.write(path + "\n")
-            self.loadPlugin(path, f)
+            self.loadPlugin(path)
             fprog.step()
-        f.close()
 
-    def loadPlugin(self, path, file):
+    def loadPlugin(self, path):
         try:
-            file.write("TRY loadPlugin\n")
             name, ext = os.path.splitext(os.path.basename(path))
             if name not in self.getSetting('excludePlugins'):
-                file.write("NOT IN EXCLUDEPLUGINS\n")
                 log.message('Importing plugin %s', name)
                 #module = imp.load_source(name, path)
 
                 module = None
                 fp, pathname, description = imp.find_module(name, ["plugins/"])
-                file.write("---find module name: " + str(fp) + "\n---find module path: " + str(pathname) + "\n")
 
                 try:
-                    file.write("BEFORE IMP.LOAD_MODULE\n")
                     module = imp.load_module(name, fp, pathname, description)
-                    print module
-                    file.write(str(module) + "\n")
-                    file.write("IMP.LOAD_MODULE\n")
                 finally:
-                    file.write("FINALLY\n")
                     if fp:
-                        file.write("FP CLOSE\n")
                         fp.close()
-                        file.write("AFTER FP CLOSE\n")
 
 
                 if module is None:
-                    file.write("MODULE IS NONE\n")
                     log.message("Could not import plugin %s", name)
                     return
 
-                boolVal = ("9" in name and "obj" in name)
-                file.write(str(boolVal) + "\n")
 
-                # mj - import only 9_export_obj for 9_ plugins
-                if ("9" not in name) or ("9" in name and "obj" in name):
-                    file.write("name : " + name + "\n")
-                    file.write("-------BEFORE MODULE ASSIGNMENT\n")
+                self.modules[name] = module
 
-                    self.modules[name] = module
 
-                    file.write("-------AFTER MODULE ASSIGNMENT\n")
+                log.message('Imported plugin %s', name)
+                log.message('Loading plugin %s', name)
 
-                    file.write(str(self.modules))
-                    file.write("\n")
+                module.load(self)
 
-                    log.message('Imported plugin %s', name)
-                    log.message('Loading plugin %s', name)
+                log.message('Loaded plugin %s', name)
 
-                    file.write("LOADING PLUGIN " + name + "\n\n")
-
-                    module.load(self)
-
-                    log.message('Loaded plugin %s', name)
-
-                    # Process all non-user-input events in the queue to make sure
-                    # any callAsync events are run.
-                    self.processEvents()
+                # Process all non-user-input events in the queue to make sure
+                # any callAsync events are run.
+                self.processEvents()
             else:
                 self.modules[name] = None
 
@@ -748,6 +721,7 @@ class MHApplication(gui3d.Application, mh.Application):
         #printtree(self)
 
         mh.changeCategory("Modelling")
+        mh.changeTask("Modelling", "Measure") # mj - change open-up screen to Modelling > Measure
 
         self.redraw()
 
@@ -802,8 +776,8 @@ class MHApplication(gui3d.Application, mh.Application):
             self.splash.resize(0,0) # work-around for mac splash-screen closing bug
 
 
-        self.mainwin.show()
-        self.splash.hide()
+        self.mainwin.show() # mj - shows main window
+        self.splash.hide() # mj - hides splash loading screen
         # self.splash.finish(self.mainwin)
         self.splash.close()
         self.splash = None

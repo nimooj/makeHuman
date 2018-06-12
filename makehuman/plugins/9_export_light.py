@@ -64,9 +64,6 @@ class ExporterLight(Exporter):
 
 
 def load(app):
-    f  = open("exportLigth.txt", "w")
-    f.write("loaded export light\n")
-    f.close()
     #app.addExporter(ExporterLight())
     return
 

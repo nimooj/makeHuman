@@ -104,8 +104,6 @@ def exportObj(filepath, config=None):
     pure_name = filename.replace(".obj", "")
     progress(0.3, 0.99, "Writing Objects")
 
-
-
     #centering, crotch_y = wavefront.writeObjFile(filepath, meshes, True, config, filterMaskedFaces=not config.hiddenGeom)
     centering = wavefront.writeObjFile(filepath, meshes, os.path.join(filepath, "..\\" + pure_name + "vertices.txt"), True, config, filterMaskedFaces=not config.hiddenGeom)
 
@@ -123,7 +121,6 @@ def exportObj(filepath, config=None):
     # print p
     # print p[0].pid
 
-    r = win32api.SendMessage(win32con.HWND_BROADCAST, 56789, 0, 0)
     #win32api.RegisterWindowMessage('56789')
 
     cpid = win32api.GetCurrentProcessId();
@@ -211,6 +208,7 @@ def exportObj(filepath, config=None):
 
 
     progress(1.0, None, "OBJ Export finished. Output file: %s" % filepath)
+    r = win32api.SendMessage(win32con.HWND_BROADCAST, 56789, 0, 0)
 
     # Kill MakeHuman
     #os.system("taskkill /PID " + str(cpid))

@@ -256,9 +256,10 @@ class MeasurementValueConverter(object):
         measure = self.task.getMeasure(self.measure)
         minValue = -1.0
         maxValue = 1.0
+
         if math.fabs(measure - goal) < 0.01:
             return self.value
-        else:
+        else: # mj - iteration to fit the given value
             tries = 10
             while tries:
                 if math.fabs(measure - goal) < 0.01:
@@ -278,6 +279,7 @@ class MeasurementValueConverter(object):
                     self.modifier.updateValue(self.value, 0)
                     measure = self.task.getMeasure(self.measure)
                 tries -= 1
+
         return self.value
 
 
@@ -340,16 +342,17 @@ class Ruler:
 
     def getMeasure(self, human, measurementname, mode):
         measure = 0
-        vindex1 = self.Measures[measurementname][0]
+        vindex1 = self.Measures[measurementname][0] # mj - starting vertex
         for vindex2 in self.Measures[measurementname]:
             vec = human.meshData.coord[vindex1] - human.meshData.coord[vindex2]
-            measure += math.sqrt(vec.dot(vec))
+            measure += math.sqrt(vec.dot(vec)) # mj - adding up distances btwn vindex1 ~ vindex2
             vindex1 = vindex2
+
 
         if mode == 'metric':
             return 10.0 * measure
         else:
-            return 10.0 * measure * 0.393700787
+            return 10.0 * measure * 0.393700787 # mj - conversion to cm
 
 
 

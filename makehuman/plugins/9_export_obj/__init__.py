@@ -81,10 +81,7 @@ class ExporterOBJ(Exporter):
         return cfg
 
 def load(app):
-    f = open("exportOBJ.txt" , "w")
-    f.write("open")
     app.addExporter(ExporterOBJ())
-    f.close()
 
 def unload(app):
     pass
