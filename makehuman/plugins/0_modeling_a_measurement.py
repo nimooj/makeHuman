@@ -49,9 +49,9 @@ import guimodifier
 import language
 
 class MeasureTaskView(guimodifier.ModifierTaskView):
-
     def __init__(self, category, name, label=None, saveName=None, cameraView=None):
         super(MeasureTaskView, self).__init__(category, name, label, saveName, cameraView)
+        print "init MeasureTaskView"
 
         self.ruler = Ruler()
         self._createMeasureMesh()
@@ -65,44 +65,62 @@ class MeasureTaskView(guimodifier.ModifierTaskView):
         self.waist = self.statsBox.addWidget(gui.TextView('Waist: '))
         self.hips = self.statsBox.addWidget(gui.TextView('Hips: '))
 
-        #print self.getMeasure('measure/measure-bust-circ-decr|incr')
+        print "ww"
+        self.customModify("waist-circ", 70)
+        print "zz"
+        self.customModify("hips-circ", "91")
+        print "tt"
+        self.customModify("bust-circ", 88)
+        print "uu"
+        self.customModify("underbust-circ", 75)
+        print "yy"
 
+    def customModify(self, feature, goal):
         # mj - try modify body in init
         # 1. Find where MeasureTaskView is first instantiated
         # 2. Get sizes as parameter
         # 3. Generate a body with desired body sizes
-        bust = self.getMeasure('measure/measure-bust-circ-decr|incr')
-        bust_goal = 90.0
+        modif = 0.0 # curr position of the slider
+        modifier = humanmodifier.UniversalModifier('measure', "measure-"+feature, 'decr', 'incr')
+        import modifierslider
+        modifierslider = humanmodifier.ModifierAction(modifier, 0, None, modifierslider.ModifierSlider.update)
+
+        l = self.getMeasure("measure/measure-"+feature+"-decr|incr")
         minValue = -1.0
         maxValue = 1.0
 
-        # for now 
-        # modif == self.value  = amount of modification / 10
-        modif = (bust_goal - bust)/10
-        modifier = UniversalModifier('measure/measure-bust-circ-decr|incr')
+        print feature
+        print "current val "
+        print l 
+        print "goal "
+        print goal
+        print "aa"
 
-        if bust < bust_goal :
-            tries = 10
-            while tries:
-                if math.fabs(bust - bust_goal) < 0.01:
+        tries = 10
+        while tries:
+            print tries
+            if math.fabs(l - goal) < 0.01:
+                print "111"
+                break
+            if goal < l:
+                print "22"
+                maxValue = modif
+                if l == minValue: 
+                    print "22-1"
                     break
-                if bust_goal < bust:
-                    maxValue = modif
-                    if bust == minValue: 
-                        break
-                    modif = minValue + (modif- minValue) / 2.0
-                    modifier.updateValue(modif, 0)
-                    bust = self.getMeasure('measure/measure-bust-circ-decr|incr')
-                else:
-                    minValue = modif
-                    if bust == maxValue:
-                        break
-                    modif = modif + (maxValue - modif) / 2.0
-                    modifier.updateValue(modif, 0)
-                    bust = self.getMeasure('measure/measure-bust-circ-decr|incr')
-                tries -= 1
-
-
+                modif = minValue + (modif- minValue) / 2.0
+                modifier.updateValue(modif, 0)
+                l = self.getMeasure("measure/measure-"+feature+"-decr|incr" )
+            else: # l < goal
+                print "33"
+                minValue = modif
+                if goal == maxValue:
+                    print "33-1"
+                    break
+                modif = modif + (maxValue - modif) / 2.0
+                modifier.updateValue(modif, 0)
+                l = self.getMeasure("measure/measure-"+feature+"-decr|incr")
+            tries -= 1
 
     def addSlider(self, sliderCategory, slider, enabledCondition):
         super(MeasureTaskView, self).addSlider(sliderCategory, slider, enabledCondition)
@@ -285,13 +303,14 @@ class MeasurementValueConverter(object):
     def displayToData(self, value):
         goal = float(value)
         measure = self.task.getMeasure(self.measure) # self.measure = Measurement name ex)measure-bust-circ-decr|incr
+        # minValue = -3.0
+        # maxValue = 3.0
+
+        # Slider min/max value
         minValue = -1.0
-        maxValue = 1.0
+        maxValue = 1.0 
 
-        # mj 
-        # - self.value * 10 : amount of modification  - ???
-
-        print self.modifier
+        # mj - self.value : slider position
 
         if math.fabs(measure - goal) < 0.01:
             return self.value
@@ -305,14 +324,14 @@ class MeasurementValueConverter(object):
                     if value == minValue:
                         break
                     self.value = minValue + (self.value - minValue) / 2.0
-        #            self.modifier.updateValue(self.value, 0)
+                    self.modifier.updateValue(self.value, 0)
                     measure = self.task.getMeasure(self.measure)
                 else:
                     minValue = self.value
                     if value == maxValue:
                         break
                     self.value = self.value + (maxValue - self.value) / 2.0
-        #            self.modifier.updateValue(self.value, 0)
+                    self.modifier.updateValue(self.value, 0)
                     measure = self.task.getMeasure(self.measure)
                 tries -= 1
 
@@ -359,8 +378,6 @@ class Ruler:
 
         self.Measures['measure/measure-ankle-circ-decr|incr'] = [11460,11464,11458,11459,11419,11418,12958,12965,12960,12963,12961,12962,12964,12927,13028,12957,11463,11461,11457,11460]
         self.Measures['measure/measure-knee-circ-decr|incr'] = [11223,11230,11232,11233,11238,11228,11229,11226,11227,11224,11225,11221,11222,11239,11237,11236,13002,11235,11234,11223]
-
-
 
    
         self._validate()
