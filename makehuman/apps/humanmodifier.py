@@ -265,8 +265,6 @@ class Modifier(object):
         self.setValue(value, skipDependencies = True)
         new_detail = [self.human.getDetail(target[0]) for target in self.targets]
 
-        print new_detail
-
         # Apply changes
         for target, old, new in zip(self.targets, old_detail, new_detail):
             if new == old:
