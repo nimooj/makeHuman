@@ -823,7 +823,7 @@ def main():
     # Here pyQt and PyOpenGL will be imported
     from mhmain import MHApplication #!!! pyQT imported here somewhere
 
-    application = MHApplication()
+    application = MHApplication(164, 90, 70, 94)
     application.run()
 
     #import cProfile

@@ -40,6 +40,7 @@ import math
 import numpy as np
 import guicommon
 import module3d
+import human # mj - import human for resizing
 import humanmodifier
 import gui
 import log
@@ -51,8 +52,6 @@ import language
 class MeasureTaskView(guimodifier.ModifierTaskView):
     def __init__(self, category, name, label=None, saveName=None, cameraView=None):
         super(MeasureTaskView, self).__init__(category, name, label, saveName, cameraView)
-        print "init MeasureTaskView"
-
         self.ruler = Ruler()
         self._createMeasureMesh()
 
@@ -64,16 +63,6 @@ class MeasureTaskView(guimodifier.ModifierTaskView):
         self.chest = self.statsBox.addWidget(gui.TextView('Chest: '))
         self.waist = self.statsBox.addWidget(gui.TextView('Waist: '))
         self.hips = self.statsBox.addWidget(gui.TextView('Hips: '))
-
-        print "ww"
-        self.customModify("waist-circ", 70)
-        print "zz"
-        self.customModify("hips-circ", "91")
-        print "tt"
-        self.customModify("bust-circ", 88)
-        print "uu"
-        self.customModify("underbust-circ", 75)
-        print "yy"
 
     def customModify(self, feature, goal):
         # mj - try modify body in init
@@ -89,33 +78,20 @@ class MeasureTaskView(guimodifier.ModifierTaskView):
         minValue = -1.0
         maxValue = 1.0
 
-        print feature
-        print "current val "
-        print l 
-        print "goal "
-        print goal
-        print "aa"
-
         tries = 10
         while tries:
-            print tries
             if math.fabs(l - goal) < 0.01:
-                print "111"
                 break
             if goal < l:
-                print "22"
                 maxValue = modif
                 if l == minValue: 
-                    print "22-1"
                     break
                 modif = minValue + (modif- minValue) / 2.0
                 modifier.updateValue(modif, 0)
                 l = self.getMeasure("measure/measure-"+feature+"-decr|incr" )
             else: # l < goal
-                print "33"
                 minValue = modif
                 if goal == maxValue:
-                    print "33-1"
                     break
                 modif = modif + (maxValue - modif) / 2.0
                 modifier.updateValue(modif, 0)
@@ -176,12 +152,32 @@ class MeasureTaskView(guimodifier.ModifierTaskView):
         super(MeasureTaskView, self).onShow(event)
 
         if not self.lastActive:
-            self.lastActive = self.groupBoxes['Neck'].children[0]
+            self.lastActive = self.groupBoxes['Torso'].children[0]
         self.lastActive.setFocus()
+
+        # mj - new location
+        human = G.app.selectedHuman
+        
+        # mj - set height
+        height = human.getHeightCm()
+        heightDiff = human.custom_height - height
+        if abs(heightDiff) > 0.2:
+            napetowaist = self.getMeasure('measure/measure-napetowaist-dist-decr|incr')
+            waisttohip = self.getMeasure('measure/measure-waisttohip-dist-decr|incr')
+            upperleg = self.getMeasure('measure/measure-upperleg-height-decr|incr')
+            lowerleg = self.getMeasure('measure/measure-lowerleg-height-decr|incr')
+        self.customModify("napetowaist-dist", napetowaist + heightDiff/4)
+        self.customModify("waisttohip-dist", waisttohip + heightDiff/4)
+        self.customModify("upperleg-height", upperleg + heightDiff/4)
+        self.customModify("lowerleg-height", lowerleg + heightDiff/4)
+
+        self.customModify("hips-circ", human.hip)
+        self.customModify("waist-circ", human.waist)
+        self.customModify("bust-circ", human.bust)
 
         self.syncGUIStats()
         self.updateMeshes()
-        human = G.app.selectedHuman
+        # human = G.app.selectedHuman
 
     def onHide(self, event):
         human = G.app.selectedHuman
@@ -237,6 +233,7 @@ class MeasureTaskView(guimodifier.ModifierTaskView):
         human = G.app.selectedHuman
 
         height = human.getHeightCm()
+        print height
         if G.app.getSetting('units') == 'metric':
             height = '%.2f cm' % height
         else:
@@ -247,6 +244,7 @@ class MeasureTaskView(guimodifier.ModifierTaskView):
         self.chest.setTextFormat(lang.getLanguageString('Chest') + ': %s', self.getMeasure('measure/measure-bust-circ-decr|incr'))
         self.waist.setTextFormat(lang.getLanguageString('Waist') + ': %s', self.getMeasure('measure/measure-waist-circ-decr|incr'))
         self.hips.setTextFormat(lang.getLanguageString('Hips') + ': %s', self.getMeasure('measure/measure-hips-circ-decr|incr'))
+
 
     def syncBraSizes(self):
         # TODO unused
@@ -301,6 +299,7 @@ class MeasurementValueConverter(object):
         return self.task.getMeasure(self.measure)
 
     def displayToData(self, value):
+        print "displayToData"
         goal = float(value)
         measure = self.task.getMeasure(self.measure) # self.measure = Measurement name ex)measure-bust-circ-decr|incr
         # minValue = -3.0
@@ -311,6 +310,8 @@ class MeasurementValueConverter(object):
         maxValue = 1.0 
 
         # mj - self.value : slider position
+        print self.measure
+        print self.modifier
 
         if math.fabs(measure - goal) < 0.01:
             return self.value

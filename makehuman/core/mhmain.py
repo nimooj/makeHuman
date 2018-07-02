@@ -148,12 +148,18 @@ class SymmetryAction(gui3d.Action):
 
 
 class MHApplication(gui3d.Application, mh.Application):
-    def __init__(self):
+    def __init__(self, height, bust, waist, hip):
         if G.app is not None:
             raise RuntimeError('MHApplication is a singleton')
         G.app = self
         gui3d.Application.__init__(self)
         mh.Application.__init__(self)
+
+        # mj -height,  bust, waist, hip
+        self.height = height
+        self.bust = bust
+        self.waist = waist
+        self.hip = hip
 
         self._default_shortcuts = {
             # Actions
@@ -384,7 +390,9 @@ class MHApplication(gui3d.Application, mh.Application):
     def loadHuman(self):
         # Set a lower than default MAX_FACES value because we know the human has a good topology (will make it a little faster)
         # (we do not lower the global limit because that would limit the selection of meshes that MH would accept too much)
-        self.selectedHuman = self.addObject(human.Human(files3d.loadMesh(mh.getSysDataPath("3dobjs/base.obj"), maxFaces = 5)))
+
+        # mj - init HUMAN
+        self.selectedHuman = self.addObject(human.Human(files3d.loadMesh(mh.getSysDataPath("3dobjs/base.obj"), maxFaces = 5), self.height, self.bust, self.waist, self.hip))
 
         # Set the base skeleton
         base_skel = skeleton.load(mh.getSysDataPath('rigs/default.mhskel'), self.selectedHuman.meshData)
@@ -532,19 +540,16 @@ class MHApplication(gui3d.Application, mh.Application):
                 finally:
                     if fp:
                         fp.close()
-
-
+                
                 if module is None:
                     log.message("Could not import plugin %s", name)
                     return
 
-
                 self.modules[name] = module
-
 
                 log.message('Imported plugin %s', name)
                 log.message('Loading plugin %s', name)
-
+                
                 module.load(self)
 
                 log.message('Loaded plugin %s', name)

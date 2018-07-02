@@ -52,7 +52,7 @@ from makehuman import getBasemeshVersion, getShortVersion, getVersionStr, getVer
 
 class Human(guicommon.Object, animation.AnimatedMesh):
 
-    def __init__(self, mesh):
+    def __init__(self, mesh, height, bust, waist, hip):
         guicommon.Object.__init__(self, mesh)
 
         self.hasWarpTargets = False
@@ -60,6 +60,12 @@ class Human(guicommon.Object, animation.AnimatedMesh):
         self.MIN_AGE = 1.0
         self.MAX_AGE = 90.0
         self.MID_AGE = 25.0
+
+        # mj - define size
+        self.custom_height = height
+        self.bust = bust
+        self.waist = waist
+        self.hip = hip
 
         self.mesh.setCameraProjection(0)
         self.mesh.setPickable(True)
@@ -86,7 +92,6 @@ class Human(guicommon.Object, animation.AnimatedMesh):
         self.skeleton = None
 
         self._modifiers = dict()
-        print self._modifiers
         self._modifier_varMapping = dict()              # Maps macro variable to the modifier group that modifies it
         self._modifier_dependencyMapping = dict()       # Maps a macro variable to all the modifiers that depend on it
         self._modifier_groups = dict()
@@ -1237,7 +1242,7 @@ class Human(guicommon.Object, animation.AnimatedMesh):
         self.weight = 0.3 # mj 
         self.muscle = 0.5 # mj 
         self.height = 0.5 # mj
-        self.breastSize = 0.5
+        self.breastSize = 0.6
         self.breastFirmness = 0.5
         self.bodyProportions = 0.5
 
