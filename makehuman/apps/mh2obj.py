@@ -73,6 +73,7 @@ def exportJoints(human, filepath, filename, centering):
 
 
 def exportObj(filepath, config=None):
+    print "exportObj"
     progress = Progress(0, None)
     human = config.human
     human.getSkeleton()
@@ -210,5 +211,9 @@ def exportObj(filepath, config=None):
     progress(1.0, None, "OBJ Export finished. Output file: %s" % filepath)
     r = win32api.SendMessage(win32con.HWND_BROADCAST, 56789, 0, 0)
 
+    # Send Message to Avatar delivery
+    # h = win32gui.FindWindow(None, "Avatar") 
+    # win32api.SnendMessage(hwnd, win32con.WM_COPYDATA, 0, "LOAD BODY")
+
     # Kill MakeHuman
-    #os.system("taskkill /PID " + str(cpid))
+    os.system("taskkill /PID " + str(cpid))

@@ -52,7 +52,7 @@ from makehuman import getBasemeshVersion, getShortVersion, getVersionStr, getVer
 
 class Human(guicommon.Object, animation.AnimatedMesh):
 
-    def __init__(self, mesh, height, bust, waist, hip):
+    def __init__(self, mesh, height=160, bust=90, waist=70, hip=95):
         guicommon.Object.__init__(self, mesh)
 
         self.hasWarpTargets = False
@@ -1242,7 +1242,7 @@ class Human(guicommon.Object, animation.AnimatedMesh):
         self.weight = 0.3 # mj 
         self.muscle = 0.5 # mj 
         self.height = 0.5 # mj
-        self.breastSize = 0.6
+        self.breastSize = 0.5
         self.breastFirmness = 0.5
         self.bodyProportions = 0.5
 

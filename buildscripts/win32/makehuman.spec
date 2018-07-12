@@ -141,8 +141,10 @@ if exportInfo.isRelease:
 else:
     VERSION_FN= str(HGREV) + '-' + NODEID
 
-appExecutable = exportPath( 'makehuman\makehuman.py' )
-qtHandle_hooks = exportPath( 'makehuman\lib\qtui.py' )
+appExecutable = exportPath( 'makehuman/makehuman.py' )
+qtHandle_hooks = exportPath( 'makehuman/lib/qtui.py' )
+#appExecutable = exportPath( 'makehuman\makehuman.py' )
+#qtHandle_hooks = exportPath( 'makehuman\lib\qtui.py' )
 
 a = Analysis([appExecutable] + i.getPluginFiles(),
              pathex= [ exportPath(p) for p in i.pathEx ],

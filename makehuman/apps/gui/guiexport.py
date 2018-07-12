@@ -56,6 +56,7 @@ class ObjConfig(ExportConfig):
 
 class ExporterOBJ(Exporter):
     def __init__(self):
+        print "exporterOBJ"
         Exporter.__init__(self)
         self.name = "Wavefront obj"
         self.filter = "Wavefront (*.obj)"
@@ -70,8 +71,8 @@ class ExporterOBJ(Exporter):
 
     def export(self, human, filename):
         from progress import Progress
-        #from . import mh2obj
         import mh2obj
+        print "ExporterOBJ export"
 
         progress = Progress.begin() (0, 1)
         cfg = self.getConfig()
