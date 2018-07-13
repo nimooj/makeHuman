@@ -41,6 +41,7 @@ import numpy as np
 import guicommon
 import module3d
 import human # mj - import human for resizing
+#import mh2obj # mj - import exportObj
 import humanmodifier
 import gui
 import log
@@ -52,6 +53,7 @@ import language
 class MeasureTaskView(guimodifier.ModifierTaskView):
     def __init__(self, category, name, label=None, saveName=None, cameraView=None):
         super(MeasureTaskView, self).__init__(category, name, label, saveName, cameraView)
+        print "measuretaskview"
         self.ruler = Ruler()
         self._createMeasureMesh()
 
@@ -97,6 +99,10 @@ class MeasureTaskView(guimodifier.ModifierTaskView):
                 modifier.updateValue(modif, 0)
                 l = self.getMeasure("measure/measure-"+feature+"-decr|incr")
             tries -= 1
+        print feature
+        print "GOAL : " + str(goal)
+        print "FINAL : " + str(l)
+        print "\n"
 
     def addSlider(self, sliderCategory, slider, enabledCondition):
         super(MeasureTaskView, self).addSlider(sliderCategory, slider, enabledCondition)
@@ -166,10 +172,10 @@ class MeasureTaskView(guimodifier.ModifierTaskView):
             waisttohip = self.getMeasure('measure/measure-waisttohip-dist-decr|incr')
             upperleg = self.getMeasure('measure/measure-upperleg-height-decr|incr')
             lowerleg = self.getMeasure('measure/measure-lowerleg-height-decr|incr')
-        self.customModify("napetowaist-dist", napetowaist + heightDiff/4)
-        self.customModify("waisttohip-dist", waisttohip + heightDiff/4)
-        self.customModify("upperleg-height", upperleg + heightDiff/4)
-        self.customModify("lowerleg-height", lowerleg + heightDiff/4)
+            self.customModify("napetowaist-dist", napetowaist + heightDiff/4)
+            self.customModify("waisttohip-dist", waisttohip + heightDiff/4)
+            self.customModify("upperleg-height", upperleg + heightDiff/4)
+            self.customModify("lowerleg-height", lowerleg + heightDiff/4)
 
         self.customModify("hips-circ", human.hip)
         self.customModify("waist-circ", human.waist)
@@ -178,6 +184,15 @@ class MeasureTaskView(guimodifier.ModifierTaskView):
         self.syncGUIStats()
         self.updateMeshes()
         # human = G.app.selectedHuman
+
+        print "import"
+        from export import Exporter
+        import guiexport
+        print "export export"
+        ExporterOBJ(Exporter)
+        ExporterOBJ.export(human, "f")
+        print "end export"
+
 
     def onHide(self, event):
         human = G.app.selectedHuman
@@ -299,7 +314,6 @@ class MeasurementValueConverter(object):
         return self.task.getMeasure(self.measure)
 
     def displayToData(self, value):
-        print "displayToData"
         goal = float(value)
         measure = self.task.getMeasure(self.measure) # self.measure = Measurement name ex)measure-bust-circ-decr|incr
         # minValue = -3.0
@@ -310,8 +324,6 @@ class MeasurementValueConverter(object):
         maxValue = 1.0 
 
         # mj - self.value : slider position
-        print self.measure
-        print self.modifier
 
         if math.fabs(measure - goal) < 0.01:
             return self.value
