@@ -53,7 +53,6 @@ import language
 class MeasureTaskView(guimodifier.ModifierTaskView):
     def __init__(self, category, name, label=None, saveName=None, cameraView=None):
         super(MeasureTaskView, self).__init__(category, name, label, saveName, cameraView)
-        print "measuretaskview"
         self.ruler = Ruler()
         self._createMeasureMesh()
 
@@ -185,13 +184,13 @@ class MeasureTaskView(guimodifier.ModifierTaskView):
         self.updateMeshes()
         # human = G.app.selectedHuman
 
-        print "import"
-        from export import Exporter
-        import guiexport
-        print "export export"
-        ExporterOBJ(Exporter)
-        ExporterOBJ.export(human, "f")
-        print "end export"
+        # print "import"
+        # from export import Exporter
+        # import guiexport
+        # print "export export"
+        # ExporterOBJ(Exporter)
+        # ExporterOBJ.export(human, "f")
+        # print "end export"
 
 
     def onHide(self, event):

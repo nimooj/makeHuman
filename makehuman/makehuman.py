@@ -823,7 +823,12 @@ def main(argv):
 
     s = argv[0]
     height, bust, waist, hip = s.split(",")
-    application = MHApplication(height, bust, waist,hip)
+    height = float(height)
+    bust = float(bust)
+    waist = float(waist)
+    hip = float(hip)
+
+    application = MHApplication(height, bust, waist, hip)
     application.run()
 
     #import cProfile
