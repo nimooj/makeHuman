@@ -51,8 +51,7 @@ from makehuman import getBasemeshVersion, getShortVersion, getVersionStr, getVer
 
 
 class Human(guicommon.Object, animation.AnimatedMesh):
-
-    def __init__(self, mesh, height=160, bust=90, waist=70, hip=95):
+    def __init__(self, mesh, gender=1, height=160, bust=90, waist=70, hip=95):
         guicommon.Object.__init__(self, mesh)
 
         self.hasWarpTargets = False
@@ -62,6 +61,7 @@ class Human(guicommon.Object, animation.AnimatedMesh):
         self.MID_AGE = 25.0
 
         # mj - define size
+        self.gender = gender
         self.custom_height = height
         self.bust = bust
         self.waist = waist
@@ -1238,7 +1238,7 @@ class Human(guicommon.Object, animation.AnimatedMesh):
 
     def setDefaultValues(self):
         self.age = 0.5
-        self.gender = 0 # mj - Default gender to remale
+        #self.gender = 0 # mj - Default gender in init
         self.weight = 0.3 # mj 
         self.muscle = 0.5 # mj 
         self.height = 0.5 # mj

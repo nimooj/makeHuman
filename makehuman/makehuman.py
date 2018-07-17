@@ -822,13 +822,14 @@ def main(argv):
     from mhmain import MHApplication #!!! pyQT imported here somewhere
 
     s = argv[0]
-    height, bust, waist, hip = s.split(",")
+    gender, height, bust, waist, hip = s.split(",")
+    gender = float(gender)
     height = float(height)
     bust = float(bust)
     waist = float(waist)
     hip = float(hip)
 
-    application = MHApplication(height, bust, waist, hip)
+    application = MHApplication(gender,height, bust, waist, hip)
     application.run()
 
     #import cProfile

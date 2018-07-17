@@ -148,7 +148,7 @@ class SymmetryAction(gui3d.Action):
 
 
 class MHApplication(gui3d.Application, mh.Application):
-    def __init__(self, height, bust, waist, hip):
+    def __init__(self, gender, height, bust, waist, hip):
         if G.app is not None:
             raise RuntimeError('MHApplication is a singleton')
         G.app = self
@@ -156,6 +156,7 @@ class MHApplication(gui3d.Application, mh.Application):
         mh.Application.__init__(self)
 
         # mj -height,  bust, waist, hip
+        self.gender = gender
         self.height = height
         self.bust = bust
         self.waist = waist
@@ -392,7 +393,7 @@ class MHApplication(gui3d.Application, mh.Application):
         # (we do not lower the global limit because that would limit the selection of meshes that MH would accept too much)
 
         # mj - init HUMAN
-        self.selectedHuman = self.addObject(human.Human(files3d.loadMesh(mh.getSysDataPath("3dobjs/base.obj"), maxFaces = 5), self.height, self.bust, self.waist, self.hip))
+        self.selectedHuman = self.addObject(human.Human(files3d.loadMesh(mh.getSysDataPath("3dobjs/base.obj"), maxFaces = 5), self.gender, self.height, self.bust, self.waist, self.hip))
 
         # Set the base skeleton
         base_skel = skeleton.load(mh.getSysDataPath('rigs/default.mhskel'), self.selectedHuman.meshData)
