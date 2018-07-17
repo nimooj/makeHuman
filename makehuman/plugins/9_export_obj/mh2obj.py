@@ -84,6 +84,9 @@ def exportObj(filepath, config=None):
     root = filepath.replace(filename, "")
     height = 0
 
+    print "exportObj"
+    print root
+
     progress(0, 0.3, "Collecting Objects")
     objects = human.getObjects(excludeZeroFaceObjs=not config.hiddenGeom)
     meshes = [o.mesh for o in objects]

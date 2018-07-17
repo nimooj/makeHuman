@@ -73,7 +73,6 @@ def exportJoints(human, filepath, filename, centering):
 
 
 def exportObj(filepath, config=None):
-    print "exportObj"
     progress = Progress(0, None)
     human = config.human
     human.getSkeleton()
