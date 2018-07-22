@@ -783,14 +783,14 @@ class MHApplication(gui3d.Application, mh.Application):
 
         log.message('') # Empty status indicator
 
-        if sys.platform.startswith("darwin"):
-            self.splash.resize(0,0) # work-around for mac splash-screen closing bug
+        # if sys.platform.startswith("darwin"):
+            # self.splash.resize(0,0) # work-around for mac splash-screen closing bug
 
         # self.mainwin.show() # mj - shows main window
         # self.splash.hide() # mj - hides splash loading screen
         # self.splash.finish(self.mainwin)
         # self.splash.close()
-        self.splash = None
+        # self.splash = None
 
         self.prompt('Warning', 'MakeHuman is a character creation suite. It is designed for making anatomically correct humans.\nParts of this program may contain nudity.\nDo you want to proceed?', 'Yes', 'No', None, self.stop, 'nudityWarning')
 
@@ -1181,9 +1181,9 @@ class MHApplication(gui3d.Application, mh.Application):
         if text is not None:
             self.status(text, *args)
 
-        if self.splash:
-            self.splash.setProgress(value)
-            self.splash.raise_()
+        # if self.splash:
+            # self.splash.setProgress(value)
+            # self.splash.raise_()
 
         if self.progressBar is None:
             return
@@ -1766,8 +1766,8 @@ class MHApplication(gui3d.Application, mh.Application):
 
         self.createShortcuts()
 
-        self.splash = gui.SplashScreen(self.getThemeResource('images', 'splash.png'), mh.getVersionDigitsStr())
-        self.splash.show()
+        # self.splash = gui.SplashScreen(self.getThemeResource('images', 'splash.png'), mh.getVersionDigitsStr())
+        # self.splash.show()
         if sys.platform != 'darwin':
             self.mainwin.hide()  # Fix for OSX crash thanks to Francois (issue #593)
 
