@@ -153,6 +153,7 @@ class MHApplication(gui3d.Application, mh.Application):
             raise RuntimeError('MHApplication is a singleton')
         G.app = self
         gui3d.Application.__init__(self)
+        # mj - mh.Application disable mainwin.show
         mh.Application.__init__(self)
 
         # mj -height,  bust, waist, hip
@@ -730,7 +731,6 @@ class MHApplication(gui3d.Application, mh.Application):
         # mh.changeCategory("Modelling")
         mh.changeTask("Modelling", "Measure") # mj - change open-up screen to Modelling > Measure
         # mh.changeCategory("Export")
-        print "Change task to Export"
         mh.changeTask("Files", "Export")
         # mh.changeCategory("Materials")
 
@@ -739,58 +739,57 @@ class MHApplication(gui3d.Application, mh.Application):
     def startupSequence(self):
         self._processCommandlineArgs(beforeLoaded = True)
 
-        mainwinGeometry = self.mainwin.storeGeometry()
-        mainwinBorder = (self.mainwin.frameGeometry().width() - self.mainwin.width(),
-             self.mainwin.frameGeometry().height() - self.mainwin.height())
+        # mainwinGeometry = self.mainwin.storeGeometry()
+        # mainwinBorder = (self.mainwin.frameGeometry().width() - self.mainwin.width(),
+             # self.mainwin.frameGeometry().height() - self.mainwin.height())
 
-        # Move main window completely behind splash screen
-        self.mainwin.resize(self.splash.width() - mainwinBorder[0], self.splash.height() - mainwinBorder[1])
-        self.mainwin.move(self.splash.pos())
+        # # Move main window completely behind splash screen
+        # self.mainwin.resize(self.splash.width() - mainwinBorder[0], self.splash.height() - mainwinBorder[1])
+        # self.mainwin.move(self.splash.pos())
 
         #self.splash.setFormat('<br><br><b><font size="10" color="#ffffff">%s</font></b>')
 
-        progress = Progress([36, 6, 15, 333, 40, 154, 257, 5], messaging=True)
+        # progress = Progress([36, 6, 15, 333, 40, 154, 257, 5], messaging=True)
 
-        progress.firststep('Loading human')
+        # progress.firststep('Loading human')
         self.loadHuman()
 
-        progress.step('Loading scene')
+        # progress.step('Loading scene')
         self.loadScene()
 
-        progress.step('Loading main GUI')
+        # progress.step('Loading main GUI')
         self.loadMainGui()
 
-        progress.step('Loading plugins')
+        # progress.step('Loading plugins')
         self.loadPlugins()
 
-        progress.step('Loading GUI')
-        self.loadGui()
+        # progress.step('Loading GUI')
+        # self.loadGui()
 
-        progress.step('Loading theme')
-        try:
-            self.setTheme(self.getSetting('guiTheme'))
-        except:
-            self.setTheme("default")
+        # progress.step('Loading theme')
+        # try:
+            # self.setTheme(self.getSetting('guiTheme'))
+        # except:
+            # self.setTheme("default")
 
-        progress.step('Applying targets')
+        # progress.step('Applying targets')
         self.loadFinish()
         
-        progress.step('Loading macro targets')
-        if self.getSetting('preloadTargets'):
-            self.loadMacroTargets()
+        # progress.step('Loading macro targets')
+        # if self.getSetting('preloadTargets'):
+            # self.loadMacroTargets()
 
-        progress.step('Loading done')
+        # progress.step('Loading done')
 
         log.message('') # Empty status indicator
 
         if sys.platform.startswith("darwin"):
             self.splash.resize(0,0) # work-around for mac splash-screen closing bug
 
-
-        self.mainwin.show() # mj - shows main window
-        self.splash.hide() # mj - hides splash loading screen
+        # self.mainwin.show() # mj - shows main window
+        # self.splash.hide() # mj - hides splash loading screen
         # self.splash.finish(self.mainwin)
-        self.splash.close()
+        # self.splash.close()
         self.splash = None
 
         self.prompt('Warning', 'MakeHuman is a character creation suite. It is designed for making anatomically correct humans.\nParts of this program may contain nudity.\nDo you want to proceed?', 'Yes', 'No', None, self.stop, 'nudityWarning')
@@ -800,11 +799,11 @@ class MHApplication(gui3d.Application, mh.Application):
             self.prompt('Warning', 'Your system does not support OpenGL shaders (GLSL v1.20 required).\nOnly simple shading will be available.', 'Ok', None, None, None, 'glslWarning')
 
         # Restore main window size and position
-        geometry = self.getSetting('windowGeometry')
-        if self.getSetting('restoreWindowSize') and geometry:
-            self.mainwin.restoreGeometry(geometry)
-        else:
-            self.mainwin.restoreGeometry(mainwinGeometry)
+        # geometry = self.getSetting('windowGeometry')
+        # if self.getSetting('restoreWindowSize') and geometry:
+            # self.mainwin.restoreGeometry(geometry)
+        # else:
+            # self.mainwin.restoreGeometry(mainwinGeometry)
 
         self._processCommandlineArgs(beforeLoaded = False)
 
