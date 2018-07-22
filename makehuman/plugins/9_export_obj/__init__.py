@@ -68,7 +68,7 @@ class ExporterOBJ(Exporter):
         progress = Progress.begin() (0, 1)
         cfg = self.getConfig()
         cfg.setHuman(human)
-        mh2obj.exportObj(filename("obj"), cfg)
+        mh2obj.exportObj("", cfg)
 
     def getConfig(self):
         cfg = ObjConfig()

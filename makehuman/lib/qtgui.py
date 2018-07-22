@@ -1486,10 +1486,6 @@ class FileEntryView(QtGui.QWidget, Widget):
         if self.mode == 'dir' and source in ('return', 'button'):
             self.directory = pathToUnicode(self.text)
 
-
-        print "self text"
-        print self.text
-
         if len(self.text):
             self.callEvent('onFileSelected',
                 self.FileSelectedEvent(self.path, source))

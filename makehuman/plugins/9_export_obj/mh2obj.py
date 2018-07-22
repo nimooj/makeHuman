@@ -40,7 +40,7 @@ import wavefront
 import os
 from progress import Progress
 import numpy as np
-import win32api, win32gui, win32con
+# import win32api, win32gui, win32con
 import psutil
 import json
 import bvh
@@ -76,16 +76,19 @@ def exportObj(filepath, config=None):
     progress = Progress(0, None)
     human = config.human
     human.getSkeleton()
+
+    # Set root dir
+    if not os.path.exists("Result"):
+        os.makedirs("Result")
+    filepath = "Result/Body.obj"
     config.setupTexFolder(filepath)
+
     filename = os.path.basename(filepath)
     name = config.goodName(os.path.splitext(filename)[0])
 
     # root dir
     root = filepath.replace(filename, "")
     height = 0
-
-    print "exportObj"
-    print root
 
     progress(0, 0.3, "Collecting Objects")
     objects = human.getObjects(excludeZeroFaceObjs=not config.hiddenGeom)
@@ -126,8 +129,7 @@ def exportObj(filepath, config=None):
     # print p[0].pid
 
 
-    cpid = win32api.GetCurrentProcessId();
-
+    # cpid = win32api.GetCurrentProcessId();
 
     path = os.path.join(root, pure_name+ ".BodyInfo")
 
@@ -213,6 +215,6 @@ def exportObj(filepath, config=None):
     #win32api.RegisterWindowMessage('56789')
     progress(1.0, None, "OBJ Export finished. Output file: %s" % filepath)
 
-    r = win32api.SendMessage(win32con.HWND_BROADCAST, 56789, 0, 0)
+    # r = win32api.SendMessage(win32con.HWND_BROADCAST, 56789, 0, 0)
     # Kill MakeHuman
     #os.system("taskkill /PID " + str(cpid))

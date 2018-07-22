@@ -45,8 +45,9 @@ import log
 
 from export import Exporter, ExportConfig
 
-class ObjConfig(ExportConfig):
+import human
 
+class ObjConfig(ExportConfig):
     def __init__(self):
         ExportConfig.__init__(self)
         self.useRelPaths = True
@@ -54,14 +55,14 @@ class ObjConfig(ExportConfig):
         self.hiddenGeom = False
 
 
-class ExporterOBJ(Exporter):
+class ExporterOBJ(Exporter): 
     def __init__(self):
-        print "exporterOBJ"
         Exporter.__init__(self)
         self.name = "Wavefront obj"
         self.filter = "Wavefront (*.obj)"
         self.fileExtension = "obj"
         self.orderPriority = 60.0
+        print "exporterOBJ init"
 
     def build(self, options, taskview):
         import gui
@@ -72,12 +73,12 @@ class ExporterOBJ(Exporter):
     def export(self, human, filename):
         from progress import Progress
         import mh2obj
-        print "ExporterOBJ export"
 
         progress = Progress.begin() (0, 1)
         cfg = self.getConfig()
         cfg.setHuman(human)
-        mh2obj.exportObj(filename("obj"), cfg)
+        # mh2obj.exportObj(filename("obj"), cfg)
+        mh2obj.exportObj("", cfg)
 
     def getConfig(self):
         cfg = ObjConfig()
@@ -144,7 +145,7 @@ class ExportTaskView(gui3d.TaskView):
             # Remember last used export folder
             gui3d.app.setSetting('exportdir', dir)
 
-            def filename(targetExt, different = False):
+            def filename(targetExt ,different = False):
                 if not different and ext != '' and ('.' + targetExt.lower()) != ext.lower():
                     log.warning("expected extension '.%s' but got '%s'", targetExt, ext)
                 return os.path.join(dir, name + '.' + targetExt)
@@ -280,6 +281,11 @@ class ExportTaskView(gui3d.TaskView):
         self.buildGui()
 
         self.fileentry.setFocus()
+        self.addExporter(ExporterOBJ())
+        for exporter in [f[0] for f in self.formats]:
+            exporter.export(gui3d.app.selectedHuman, "")
+            gui3d.app.status([u'The mesh has been exported to',u' %s.'], dir)
+            break
 
     def onHide(self, event):
         super(ExportTaskView, self).onHide(event)

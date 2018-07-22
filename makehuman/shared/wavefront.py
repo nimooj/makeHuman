@@ -447,7 +447,6 @@ def writeObjFile(path, meshes, filepath, writeMTL=True, config=None, filterMaske
     min_y = 0
     max_y = 0
 
-
     fp.write(
         "# MakeHuman exported OBJ\n" +
         "# www.makehuman.org\n\n")
@@ -462,7 +461,6 @@ def writeObjFile(path, meshes, filepath, writeMTL=True, config=None, filterMaske
         offset = config.offset
     else:
         offset = [0,0,0]
-
 
     if filterMaskedFaces:
         meshes = [m.clone(scale=scale, filterMaskedVerts=True) for m in meshes]
@@ -494,7 +492,6 @@ def writeObjFile(path, meshes, filepath, writeMTL=True, config=None, filterMaske
                 min_y = y
             if y > max_y:
                 max_y = y
-
 
     flatten.sort()
     crotch_y = flatten[0]

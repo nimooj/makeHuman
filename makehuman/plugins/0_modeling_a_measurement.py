@@ -184,15 +184,6 @@ class MeasureTaskView(guimodifier.ModifierTaskView):
         self.updateMeshes()
         # human = G.app.selectedHuman
 
-        # print "import"
-        # from export import Exporter
-        # import guiexport
-        # print "export export"
-        # ExporterOBJ(Exporter)
-        # ExporterOBJ.export(human, "f")
-        # print "end export"
-
-
     def onHide(self, event):
         human = G.app.selectedHuman
 

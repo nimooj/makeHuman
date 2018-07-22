@@ -77,6 +77,12 @@ def exportObj(filepath, config=None):
     human = config.human
     human.getSkeleton()
     config.setupTexFolder(filepath)
+
+    # Set root dir
+    if not os.path.exists("Result"):
+        os.makedirs("Result")
+    filepath = "Result/Body.obj"
+
     filename = os.path.basename(filepath)
     name = config.goodName(os.path.splitext(filename)[0])
 

@@ -398,6 +398,7 @@ class MHApplication(gui3d.Application, mh.Application):
         # Set the base skeleton
         base_skel = skeleton.load(mh.getSysDataPath('rigs/default.mhskel'), self.selectedHuman.meshData)
         self.selectedHuman.setBaseSkeleton(base_skel)
+        # self.selectedHuman.setHairProxy("<Proxy short02 Hair data/hair/short02/short02.mhpxy c104cd4a-1edc-43f9-8b94-f63345a44638>")
 
     def loadScene(self):
         userSceneDir = mh.getDataPath("scenes")
@@ -726,8 +727,12 @@ class MHApplication(gui3d.Application, mh.Application):
 
         #printtree(self)
 
-        mh.changeCategory("Modelling")
+        # mh.changeCategory("Modelling")
         mh.changeTask("Modelling", "Measure") # mj - change open-up screen to Modelling > Measure
+        # mh.changeCategory("Export")
+        print "Change task to Export"
+        mh.changeTask("Files", "Export")
+        # mh.changeCategory("Materials")
 
         self.redraw()
 
