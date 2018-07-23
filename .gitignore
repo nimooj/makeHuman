@@ -1,5 +1,6 @@
 *.pyc
-buildscripts/
+buildscripts/win32/build
+buildscripts/win32/dist
 maketarget-standalone/
 blendertools/
 docs/
