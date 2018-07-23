@@ -242,18 +242,19 @@ class Modifier(object):
         return self._defaultValue
 
     def buildLists(self):
-        # Collect vertex and face indices if we didn't yet
-        if self.verts is None and self.faces is None:
-            # Collect verts
-            vmask = np.zeros(self.human.meshData.getVertexCount(), dtype=bool)
-            for target in self.targets:
-                t = algos3d.getTarget(self.human.meshData, target[0])
-                vmask[t.verts] = True
-            self.verts = np.argwhere(vmask)[...,0]
-            del vmask
+        if self.human == None:
+            self.human = G.app.selectedHuman
 
-            # collect faces
-            self.faces = self.human.meshData.getFacesForVertices(self.verts)
+        # Collect verts
+        vmask = np.zeros(self.human.meshData.getVertexCount(), dtype=bool)
+        for target in self.targets:
+            t = algos3d.getTarget(self.human.meshData, target[0])
+            vmask[t.verts] = True
+        self.verts = np.argwhere(vmask)[...,0]
+        del vmask
+
+        # collect faces
+        self.faces = self.human.meshData.getFacesForVertices(self.verts)
 
     def updateValue(self, value, updateNormals=1, skipUpdate=False):
         if self.verts is None and self.faces is None:

@@ -164,15 +164,10 @@ def splitSections(filepath, filename, meshes, joints, config=None, filterMaskedF
     scale = config.scale if config is not None else 1.0
 
     if filterMaskedFaces:
-        print "filterMaskedFaces"
         meshes = [m.clone(scale=scale, filterMaskedVerts=True) for m in meshes]
     else:
         # Unfiltered
         meshes = [m.clone(scale=scale, filterMaskedVerts=False) for m in meshes]
-
-
-    f_path = os.path.join(filepath, "..\\" + filename + "vertices.txt")
-    f = open(f_path, "w")
 
 
     flag = []
@@ -259,9 +254,6 @@ def splitSections(filepath, filename, meshes, joints, config=None, filterMaskedF
     flatten.sort()
     crotch = flatten[0]
 
-    print "Crotch in split: "
-    print crotch
-
     for mesh in meshes:
         for co in mesh.coord:
             tt = tuple(co + offset)
@@ -279,7 +271,6 @@ def splitSections(filepath, filename, meshes, joints, config=None, filterMaskedF
                     h.append("") # Node=??\n
                     flag[10] = True
                 h.append(str(idx) + "\n")
-                f.write(str(x) + " " + str(y) + " " + str(z) + "\n")
                 #h_c += 1
 
             # Neck
@@ -289,7 +280,6 @@ def splitSections(filepath, filename, meshes, joints, config=None, filterMaskedF
                     n.append("")
                     flag[11] = True
                 n.append(str(idx) + "\n")
-                f.write(str(x) + " " + str(y) + " " + str(z) + "\n")
                 #n_c += 1
 
             # Right Arm
@@ -299,7 +289,6 @@ def splitSections(filepath, filename, meshes, joints, config=None, filterMaskedF
                     ra.append("")
                     flag[4] = True
                 ra.append(str(idx) + "\n")
-                f.write(str(x) + " " + str(y) + " " + str(z) + "\n")
                 #ra_c += 1
 
             # Left Arm
@@ -309,7 +298,6 @@ def splitSections(filepath, filename, meshes, joints, config=None, filterMaskedF
                     la.append("")
                     flag[5] = True
                 la.append(str(idx) + "\n")
-                f.write(str(x) + " " + str(y) + " " + str(z) + "\n")
                 #la_c += 1
 
             # Right Hand
@@ -319,7 +307,6 @@ def splitSections(filepath, filename, meshes, joints, config=None, filterMaskedF
                     rh.append("")
                     flag[6] = True
                 rh.append(str(idx) + "\n")
-                f.write(str(x) + " " + str(y) + " " + str(z) + "\n")
                 #rh_c += 1
 
             # Left Hand
@@ -329,7 +316,6 @@ def splitSections(filepath, filename, meshes, joints, config=None, filterMaskedF
                     lh.append("")
                     flag[7] = True
                 lh.append(str(idx) + "\n")
-                f.write(str(x) + " " + str(y) + " " + str(z) + "\n")
                 #lh_c += 1
 
 
@@ -340,7 +326,6 @@ def splitSections(filepath, filename, meshes, joints, config=None, filterMaskedF
                     rl.append("")
                     flag[2] = True
                 rl.append(str(idx) + "\n")
-                f.write(str(x) + " " + str(y) + " " + str(z) + "\n")
                 #rl_c += 1
 
                 if not flag[1]:
@@ -348,7 +333,6 @@ def splitSections(filepath, filename, meshes, joints, config=None, filterMaskedF
                     s.append("")
                     flag[1] = True
                 s.append(str(idx) + "\n")
-                f.write(str(x) + " " + str(y) + " " + str(z) + "\n")
                 #s_c += 1
 
                 if y > crotch: 
@@ -357,7 +341,6 @@ def splitSections(filepath, filename, meshes, joints, config=None, filterMaskedF
                         t.append("")
                         flag[0] = True
                     t.append(str(idx) + "\n")
-                    f.write(str(x) + " " + str(y) + " " + str(z) + "\n")
 
             # Left Leg
             elif y <= joints["Waist level"][1] and y > joints["Left Ankle"][1] and x >= joints["Pelvis Center"][0]:
@@ -366,7 +349,6 @@ def splitSections(filepath, filename, meshes, joints, config=None, filterMaskedF
                     ll.append("")
                     flag[3] = True
                 ll.append(str(idx) + "\n")
-                f.write(str(x) + " " + str(y) + " " + str(z) + "\n")
                 #ll_c += 1
 
                 if not flag[1]:
@@ -374,7 +356,6 @@ def splitSections(filepath, filename, meshes, joints, config=None, filterMaskedF
                     s.append("")
                     flag[1] = True
                 s.append(str(idx) + "\n")
-                f.write(str(x) + " " + str(y) + " " + str(z) + "\n")
                 #s_c += 1
 
                 if y > crotch: 
@@ -383,7 +364,6 @@ def splitSections(filepath, filename, meshes, joints, config=None, filterMaskedF
                         t.append("")
                         flag[0] = True
                     t.append(str(idx) + "\n")
-                    f.write(str(x) + " " + str(y) + " " + str(z) + "\n")
 
             # Right Foot
             elif x < joints["Pelvis Center"][0] and y <= joints["Right Ankle"][1]:
@@ -392,7 +372,6 @@ def splitSections(filepath, filename, meshes, joints, config=None, filterMaskedF
                     rf.append("")
                     flag[9] = True
                 rf.append(str(idx) + "\n")
-                f.write(str(x) + " " + str(y) + " " + str(z) + "\n")
                 #rf_c += 1
 
             # Left Foot
@@ -402,7 +381,6 @@ def splitSections(filepath, filename, meshes, joints, config=None, filterMaskedF
                     lf.append("")
                     flag[8] = True
                 lf.append(str(idx) + "\n")
-                f.write(str(x) + " " + str(y) + " " + str(z) + "\n")
                 #lf_c += 1
 
 
@@ -413,7 +391,6 @@ def splitSections(filepath, filename, meshes, joints, config=None, filterMaskedF
                     t.append("")
                     flag[0] = True
                 t.append(str(idx) + "\n")
-                f.write(str(x) + " " + str(y) + " " + str(z) + "\n")
                 #t_c += 1
 
             idx += 1
@@ -448,8 +425,6 @@ def splitSections(filepath, filename, meshes, joints, config=None, filterMaskedF
 
     total = t + s + rl + ll + ra + la + rh + lh + rf + lf + h + n
 
-    f.close()
-
     c = open(filename+"Indices", "w")
     c.write("Part=12\n")
     for l in total:
@@ -472,7 +447,6 @@ def writeObjFile(path, meshes, filepath, writeMTL=True, config=None, filterMaske
     min_y = 0
     max_y = 0
 
-
     fp.write(
         "# MakeHuman exported OBJ\n" +
         "# www.makehuman.org\n\n")
@@ -488,9 +462,7 @@ def writeObjFile(path, meshes, filepath, writeMTL=True, config=None, filterMaske
     else:
         offset = [0,0,0]
 
-
     if filterMaskedFaces:
-        print "filterMaskedFaces"
         meshes = [m.clone(scale=scale, filterMaskedVerts=True) for m in meshes]
     else:
         # Unfiltered
@@ -520,10 +492,6 @@ def writeObjFile(path, meshes, filepath, writeMTL=True, config=None, filterMaske
                 min_y = y
             if y > max_y:
                 max_y = y
-
-
-    print "min_y: "+ str(min_y)
-    print "max_y: "+ str(max_y)
 
     flatten.sort()
     crotch_y = flatten[0]

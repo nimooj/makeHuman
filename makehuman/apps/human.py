@@ -51,8 +51,7 @@ from makehuman import getBasemeshVersion, getShortVersion, getVersionStr, getVer
 
 
 class Human(guicommon.Object, animation.AnimatedMesh):
-
-    def __init__(self, mesh):
+    def __init__(self, mesh, gender=1, height=160, bust=90, waist=70, hip=95):
         guicommon.Object.__init__(self, mesh)
 
         self.hasWarpTargets = False
@@ -60,6 +59,13 @@ class Human(guicommon.Object, animation.AnimatedMesh):
         self.MIN_AGE = 1.0
         self.MAX_AGE = 90.0
         self.MID_AGE = 25.0
+
+        # mj - define size
+        self.gender = gender
+        self.custom_height = height
+        self.bust = bust
+        self.waist = waist
+        self.hip = hip
 
         self.mesh.setCameraProjection(0)
         self.mesh.setPickable(True)
@@ -79,7 +85,7 @@ class Human(guicommon.Object, animation.AnimatedMesh):
         self.bodyZones = ['l-eye','r-eye', 'jaw', 'nose', 'mouth', 'head', 'neck', 'torso', 'hip', 'pelvis', 'r-upperarm', 'l-upperarm', 'r-lowerarm', 'l-lowerarm', 'l-hand',
                           'r-hand', 'r-upperleg', 'l-upperleg', 'r-lowerleg', 'l-lowerleg', 'l-foot', 'r-foot', 'ear']
 
-        self.material = material.fromFile(getSysDataPath('skins/default.mhmat'))
+        self.material = material.fromFile(getSysDataPath('skins/young_asian_female/young_asian_female.mhmat'))
         self._defaultMaterial = material.Material().copyFrom(self.material)
 
         # Init with no user-selected skeleton
@@ -1099,7 +1105,7 @@ class Human(guicommon.Object, animation.AnimatedMesh):
         # Apply targets to seedmesh coordinates
         itprog = Progress(len(self.targetsDetailStack))
         for (targetPath, morphFactor) in self.targetsDetailStack.iteritems():
-            algos3d.loadTranslationTarget(self.meshData, targetPath, morphFactor, None, 0, 0)
+            algos3d.loadTranslationTarget(self.meshData, targetPath, morphFactor, None, 0, 0) # mj - size modification of the human
             itprog.step()
 
         progress(0.5, 1.0)
@@ -1232,10 +1238,10 @@ class Human(guicommon.Object, animation.AnimatedMesh):
 
     def setDefaultValues(self):
         self.age = 0.5
-        self.gender = 0.5
-        self.weight = 0.5
-        self.muscle = 0.5
-        self.height = 0.5
+        #self.gender = 0 # mj - Default gender in init
+        self.weight = 0.3 # mj 
+        self.muscle = 0.5 # mj 
+        self.height = 0.5 # mj
         self.breastSize = 0.5
         self.breastFirmness = 0.5
         self.bodyProportions = 0.5
@@ -1249,9 +1255,9 @@ class Human(guicommon.Object, animation.AnimatedMesh):
         self._setBreastFirmnessVals()
         self._setBodyProportionVals()
 
-        self.caucasianVal = 1.0/3
-        self.asianVal = 1.0/3
-        self.africanVal = 1.0/3
+        self.caucasianVal = 2.0/4
+        self.asianVal = 1.0/4
+        self.africanVal = 1.0/4
 
     def resetMeshValues(self):
         self.setSubdivided(False, update=False)

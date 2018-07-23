@@ -1490,9 +1490,13 @@ class FileEntryView(QtGui.QWidget, Widget):
             self.callEvent('onFileSelected',
                 self.FileSelectedEvent(self.path, source))
         else:
-            import log
-            log.notice("The text box is empty. Please enter a valid file name.")
-            self.setFocus()
+            # mj - set default export path
+            self.text = "Body.obj"
+            self.callEvent('onFileSelected',
+                self.FileSelectedEvent(self.path, source))
+            # import log
+            # log.notice("The text box is empty. Please enter a valid file name.")
+            # self.setFocus()
 
     def onFocus(self, event):
         """Handler for the event of the widget being given focus. It passes

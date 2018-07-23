@@ -783,8 +783,7 @@ makes use of.\n"""
     return result
 
 
-def main():
-    
+def main(argv):
     try:
         set_sys_path()
         args = parse_arguments()
@@ -819,11 +818,18 @@ def main():
         # Suppress runtime errors
         numpy.seterr(all = 'ignore')
 
-
     # Here pyQt and PyOpenGL will be imported
     from mhmain import MHApplication #!!! pyQT imported here somewhere
 
-    application = MHApplication()
+    s = argv[0]
+    gender, height, bust, waist, hip = s.split(",")
+    gender = float(gender)
+    height = float(height)
+    bust = float(bust)
+    waist = float(waist)
+    hip = float(hip)
+
+    application = MHApplication(gender,height, bust, waist, hip)
     application.run()
 
     #import cProfile
@@ -832,4 +838,4 @@ def main():
     close_standard_streams()
 
 if __name__ == '__main__':
-    main()
+    main(sys.argv[1:])

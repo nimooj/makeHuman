@@ -40,6 +40,8 @@ import math
 import numpy as np
 import guicommon
 import module3d
+import human # mj - import human for resizing
+#import mh2obj # mj - import exportObj
 import humanmodifier
 import gui
 import log
@@ -49,10 +51,8 @@ import guimodifier
 import language
 
 class MeasureTaskView(guimodifier.ModifierTaskView):
-
     def __init__(self, category, name, label=None, saveName=None, cameraView=None):
         super(MeasureTaskView, self).__init__(category, name, label, saveName, cameraView)
-
         self.ruler = Ruler()
         self._createMeasureMesh()
 
@@ -65,13 +65,43 @@ class MeasureTaskView(guimodifier.ModifierTaskView):
         self.waist = self.statsBox.addWidget(gui.TextView('Waist: '))
         self.hips = self.statsBox.addWidget(gui.TextView('Hips: '))
 
-        '''
-        self.braBox = self.addRightWidget(gui.GroupBox('Brassiere size'))
-        self.eu = self.braBox.addWidget(gui.TextView('EU: '))
-        self.jp = self.braBox.addWidget(gui.TextView('JP: '))
-        self.us = self.braBox.addWidget(gui.TextView('US: '))
-        self.uk = self.braBox.addWidget(gui.TextView('UK: '))
-        '''
+    def customModify(self, feature, goal):
+        # mj - try modify body in init
+        # 1. Find where MeasureTaskView is first instantiated
+        # 2. Get sizes as parameter
+        # 3. Generate a body with desired body sizes
+        modif = 0.0 # curr position of the slider
+        modifier = humanmodifier.UniversalModifier('measure', "measure-"+feature, 'decr', 'incr')
+        import modifierslider
+        modifierslider = humanmodifier.ModifierAction(modifier, 0, None, modifierslider.ModifierSlider.update)
+
+        l = self.getMeasure("measure/measure-"+feature+"-decr|incr")
+        minValue = -1.0
+        maxValue = 1.0
+
+        tries = 10
+        while tries:
+            if math.fabs(l - goal) < 0.01:
+                break
+            if goal < l:
+                maxValue = modif
+                if l == minValue: 
+                    break
+                modif = minValue + (modif- minValue) / 2.0
+                modifier.updateValue(modif, 0)
+                l = self.getMeasure("measure/measure-"+feature+"-decr|incr" )
+            else: # l < goal
+                minValue = modif
+                if goal == maxValue:
+                    break
+                modif = modif + (maxValue - modif) / 2.0
+                modifier.updateValue(modif, 0)
+                l = self.getMeasure("measure/measure-"+feature+"-decr|incr")
+            tries -= 1
+        print feature
+        print "GOAL : " + str(goal)
+        print "FINAL : " + str(l)
+        print "\n"
 
     def addSlider(self, sliderCategory, slider, enabledCondition):
         super(MeasureTaskView, self).addSlider(sliderCategory, slider, enabledCondition)
@@ -127,12 +157,32 @@ class MeasureTaskView(guimodifier.ModifierTaskView):
         super(MeasureTaskView, self).onShow(event)
 
         if not self.lastActive:
-            self.lastActive = self.groupBoxes['Neck'].children[0]
+            self.lastActive = self.groupBoxes['Torso'].children[0]
         self.lastActive.setFocus()
+
+        # mj - new location
+        human = G.app.selectedHuman
+        
+        # mj - set height
+        height = human.getHeightCm()
+        heightDiff = human.custom_height - height
+        if abs(heightDiff) > 0.2:
+            napetowaist = self.getMeasure('measure/measure-napetowaist-dist-decr|incr')
+            waisttohip = self.getMeasure('measure/measure-waisttohip-dist-decr|incr')
+            upperleg = self.getMeasure('measure/measure-upperleg-height-decr|incr')
+            lowerleg = self.getMeasure('measure/measure-lowerleg-height-decr|incr')
+            self.customModify("napetowaist-dist", napetowaist + heightDiff/4)
+            self.customModify("waisttohip-dist", waisttohip + heightDiff/4)
+            self.customModify("upperleg-height", upperleg + heightDiff/4)
+            self.customModify("lowerleg-height", lowerleg + heightDiff/4)
+
+        self.customModify("hips-circ", human.hip)
+        self.customModify("waist-circ", human.waist)
+        self.customModify("bust-circ", human.bust)
 
         self.syncGUIStats()
         self.updateMeshes()
-        human = G.app.selectedHuman
+        # human = G.app.selectedHuman
 
     def onHide(self, event):
         human = G.app.selectedHuman
@@ -188,6 +238,7 @@ class MeasureTaskView(guimodifier.ModifierTaskView):
         human = G.app.selectedHuman
 
         height = human.getHeightCm()
+        print height
         if G.app.getSetting('units') == 'metric':
             height = '%.2f cm' % height
         else:
@@ -198,6 +249,7 @@ class MeasureTaskView(guimodifier.ModifierTaskView):
         self.chest.setTextFormat(lang.getLanguageString('Chest') + ': %s', self.getMeasure('measure/measure-bust-circ-decr|incr'))
         self.waist.setTextFormat(lang.getLanguageString('Waist') + ': %s', self.getMeasure('measure/measure-waist-circ-decr|incr'))
         self.hips.setTextFormat(lang.getLanguageString('Hips') + ': %s', self.getMeasure('measure/measure-hips-circ-decr|incr'))
+
 
     def syncBraSizes(self):
         # TODO unused
@@ -253,12 +305,19 @@ class MeasurementValueConverter(object):
 
     def displayToData(self, value):
         goal = float(value)
-        measure = self.task.getMeasure(self.measure)
+        measure = self.task.getMeasure(self.measure) # self.measure = Measurement name ex)measure-bust-circ-decr|incr
+        # minValue = -3.0
+        # maxValue = 3.0
+
+        # Slider min/max value
         minValue = -1.0
-        maxValue = 1.0
+        maxValue = 1.0 
+
+        # mj - self.value : slider position
+
         if math.fabs(measure - goal) < 0.01:
             return self.value
-        else:
+        else: # mj - iteration to fit the given value
             tries = 10
             while tries:
                 if math.fabs(measure - goal) < 0.01:
@@ -278,6 +337,7 @@ class MeasurementValueConverter(object):
                     self.modifier.updateValue(self.value, 0)
                     measure = self.task.getMeasure(self.measure)
                 tries -= 1
+
         return self.value
 
 
@@ -322,8 +382,6 @@ class Ruler:
         self.Measures['measure/measure-ankle-circ-decr|incr'] = [11460,11464,11458,11459,11419,11418,12958,12965,12960,12963,12961,12962,12964,12927,13028,12957,11463,11461,11457,11460]
         self.Measures['measure/measure-knee-circ-decr|incr'] = [11223,11230,11232,11233,11238,11228,11229,11226,11227,11224,11225,11221,11222,11239,11237,11236,13002,11235,11234,11223]
 
-
-
    
         self._validate()
 
@@ -340,16 +398,17 @@ class Ruler:
 
     def getMeasure(self, human, measurementname, mode):
         measure = 0
-        vindex1 = self.Measures[measurementname][0]
+        vindex1 = self.Measures[measurementname][0] # mj - starting vertex
         for vindex2 in self.Measures[measurementname]:
             vec = human.meshData.coord[vindex1] - human.meshData.coord[vindex2]
-            measure += math.sqrt(vec.dot(vec))
+            measure += math.sqrt(vec.dot(vec)) # mj - adding up distances btwn vindex1 ~ vindex2
             vindex1 = vindex2
+
 
         if mode == 'metric':
             return 10.0 * measure
         else:
-            return 10.0 * measure * 0.393700787
+            return 10.0 * measure * 0.393700787 # mj - conversion to cm
 
 
 

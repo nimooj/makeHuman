@@ -45,14 +45,19 @@ import psutil
 import json
 import bvh
 from core import G
+import skeleton
+import mh
 
 def exportJoints(human, filepath, filename, centering):
     #path = os.path.join(filepath, filename+"joints.txt")
     #path2 = os.path.join(filepath, filename+"jointNames.txt")
 
     if not human.getSkeleton():
-        G.app.prompt('Error', 'You did not select a skeleton from the library.', 'OK')
-        return
+        #G.app.prompt('Error', 'You did not select a skeleton from the library.', 'OK')
+        #return
+
+        human.skeleton = skeleton.load(mh.getSysDataPath('rigs/default.mhskel'), human.meshData)
+        human.skeleton.dirty = True
 
     skel = human.getSkeleton()
     b = bvh.BVH()
@@ -70,7 +75,13 @@ def exportObj(filepath, config=None):
     progress = Progress(0, None)
     human = config.human
     human.getSkeleton()
+
+    # Set root dir
+    if not os.path.exists("Result"):
+        os.makedirs("Result")
+    filepath = "Result/Body.obj"
     config.setupTexFolder(filepath)
+
     filename = os.path.basename(filepath)
     name = config.goodName(os.path.splitext(filename)[0])
 
@@ -98,14 +109,10 @@ def exportObj(filepath, config=None):
     pure_name = filename.replace(".obj", "")
     progress(0.3, 0.99, "Writing Objects")
 
-
+    print "exporting..."
 
     #centering, crotch_y = wavefront.writeObjFile(filepath, meshes, True, config, filterMaskedFaces=not config.hiddenGeom)
-    print "before"
-    print meshes[0]
     centering = wavefront.writeObjFile(filepath, meshes, os.path.join(filepath, "..\\" + pure_name + "vertices.txt"), True, config, filterMaskedFaces=not config.hiddenGeom)
-    print "after"
-    print meshes[0]
 
     joints = exportJoints(human, filepath, pure_name, centering)
     crotch_y = wavefront.splitSections(filepath, pure_name, meshes, joints, config, filterMaskedFaces=not config.hiddenGeom)
@@ -121,17 +128,7 @@ def exportObj(filepath, config=None):
     # print p
     # print p[0].pid
 
-    #print  "before crotch_y: " + str(crotch_y)
-    #print "centering: " + str(centering)
-    #print  "after crotch_y: " + str(crotch_y)
-
-   # crotch_y = (crotch_y*100-centering)
-    print crotch_y
-    r = win32api.SendMessage(win32con.HWND_BROADCAST, 56789, 0, 0)
-    #win32api.RegisterWindowMessage('56789')
-
     cpid = win32api.GetCurrentProcessId();
-
 
     path = os.path.join(root, pure_name+ ".BodyInfo")
 
@@ -214,7 +211,9 @@ def exportObj(filepath, config=None):
     os.remove(pure_name+"Indices")
 
 
+    #win32api.RegisterWindowMessage('56789')
     progress(1.0, None, "OBJ Export finished. Output file: %s" % filepath)
 
+    # r = win32api.SendMessage(win32con.HWND_BROADCAST, 56789, 0, 0)
     # Kill MakeHuman
-    #os.system("taskkill /PID " + str(cpid))
+    os.system("taskkill /PID " + str(cpid))

@@ -68,14 +68,14 @@ class ExporterOBJ(Exporter):
         progress = Progress.begin() (0, 1)
         cfg = self.getConfig()
         cfg.setHuman(human)
-        mh2obj.exportObj(filename("obj"), cfg)
+        mh2obj.exportObj("", cfg)
 
     def getConfig(self):
         cfg = ObjConfig()
         cfg.useNormals = self.useNormals.selected
 
         cfg.feetOnGround      = self.feetOnGround.selected
-        #cfg.scale,cfg.unit    = self.taskview.getScale()
+        cfg.scale,cfg.unit    = self.taskview.getScale()
         cfg.hiddenGeom        = self.hiddenGeom.selected
 
         return cfg

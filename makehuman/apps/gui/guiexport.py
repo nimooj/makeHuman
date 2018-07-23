@@ -43,6 +43,51 @@ import gui
 import gui3d
 import log
 
+from export import Exporter, ExportConfig
+
+import human
+
+class ObjConfig(ExportConfig):
+    def __init__(self):
+        ExportConfig.__init__(self)
+        self.useRelPaths = True
+        self.useNormals = False
+        self.hiddenGeom = False
+
+
+class ExporterOBJ(Exporter): 
+    def __init__(self):
+        Exporter.__init__(self)
+        self.name = "Wavefront obj"
+        self.filter = "Wavefront (*.obj)"
+        self.fileExtension = "obj"
+        self.orderPriority = 60.0
+
+    def build(self, options, taskview):
+        import gui
+        Exporter.build(self, options, taskview)
+        self.useNormals = options.addWidget(gui.CheckBox("Normals", False))
+        self.hiddenGeom = options.addWidget(gui.CheckBox("Helper geometry", False))
+
+    def export(self, human, filename):
+        from progress import Progress
+        import mh2obj
+
+        progress = Progress.begin() (0, 1)
+        cfg = self.getConfig()
+        cfg.setHuman(human)
+        # mh2obj.exportObj(filename("obj"), cfg)
+        mh2obj.exportObj("", cfg)
+
+    def getConfig(self):
+        cfg = ObjConfig()
+        cfg.useNormals = self.useNormals.selected
+
+        cfg.feetOnGround      = self.feetOnGround.selected
+        cfg.scale,cfg.unit    = self.taskview.getScale()
+        cfg.hiddenGeom        = self.hiddenGeom.selected
+
+        return cfg
 
 class ExportTaskView(gui3d.TaskView):
     def __init__(self, category):
@@ -58,7 +103,8 @@ class ExportTaskView(gui3d.TaskView):
 
         self.fileentry = self.addTopWidget(gui.FileEntryView('Export', mode='save'))
         self.fileentry.directory = gui3d.app.getSetting('exportdir')
-        self.fileentry.filter = 'All Files (*.*)'
+        #self.fileentry.filter = 'All Files (*.*)'
+        self.fileentry.filter = 'Wavefront (*.obj)'
 
         self.exportBodyGroup = []
         self.exportHairGroup = []
@@ -76,8 +122,8 @@ class ExportTaskView(gui3d.TaskView):
         self.optionsBox.setAutoResize(True)
 
         # Scales
-        #self.scaleBox = self.addRightWidget(gui.GroupBox('Scale units'))
-        #self.scaleButtons = self.addScales(self.scaleBox)
+        self.scaleBox = self.addRightWidget(gui.GroupBox('Scale units'))
+        self.scaleButtons = self.addScales(self.scaleBox)
 
         self.boxes = {
             'mesh': self.formatBox,
@@ -98,7 +144,7 @@ class ExportTaskView(gui3d.TaskView):
             # Remember last used export folder
             gui3d.app.setSetting('exportdir', dir)
 
-            def filename(targetExt, different = False):
+            def filename(targetExt ,different = False):
                 if not different and ext != '' and ('.' + targetExt.lower()) != ext.lower():
                     log.warning("expected extension '.%s' but got '%s'", targetExt, ext)
                 return os.path.join(dir, name + '.' + targetExt)
@@ -114,7 +160,19 @@ class ExportTaskView(gui3d.TaskView):
                 self.showOverwriteWarning = False
                 break
             else:
-                log.error("Unknown export format selected!")
+                #log.error("Unknown export format selected!")
+                #log.error(self.formats)
+                self.addExporter(ExporterOBJ())
+                for exporter in [f[0] for f in self.formats]:
+                    if self.showOverwriteWarning and \
+                        event.source in ('button', 'return') and \
+                        os.path.exists(os.path.join(dir, name + '.' + exporter.fileExtension)):
+                        if not gui3d.app.prompt("File exists", "The file already exists. Overwrite?", "Yes", "No"):
+                            break;
+                    exporter.export(gui3d.app.selectedHuman, filename)
+                    gui3d.app.status([u'The mesh has been exported to',u' %s.'], dir)
+                    self.showOverwriteWarning = False
+                    break
 
         @self.fileentry.mhEvent
         def onChange(text):
@@ -168,7 +226,7 @@ class ExportTaskView(gui3d.TaskView):
     def getExporterNames(self):
         return [exporter.name for exporter, _, _ in self.formats]
 
-    def setFileExtension(self, extension, filter='All Files (*.*)'):
+    def setFileExtension(self, extension, filter='Wavefront (*.obj)'):
         self.fileentry.filter = filter
         path, ext = os.path.splitext(self.fileentry.text)
         if ext:
@@ -222,6 +280,13 @@ class ExportTaskView(gui3d.TaskView):
         self.buildGui()
 
         self.fileentry.setFocus()
+        self.addExporter(ExporterOBJ())
+        for exporter in [f[0] for f in self.formats]:
+            print "??"
+            exporter.export(gui3d.app.selectedHuman, "")
+            print "!!"
+            gui3d.app.status([u'The mesh has been exported to',u' %s.'], dir)
+            break
 
     def onHide(self, event):
         super(ExportTaskView, self).onHide(event)

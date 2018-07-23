@@ -148,12 +148,20 @@ class SymmetryAction(gui3d.Action):
 
 
 class MHApplication(gui3d.Application, mh.Application):
-    def __init__(self):
+    def __init__(self, gender, height, bust, waist, hip):
         if G.app is not None:
             raise RuntimeError('MHApplication is a singleton')
         G.app = self
         gui3d.Application.__init__(self)
+        # mj - mh.Application disable mainwin.show
         mh.Application.__init__(self)
+
+        # mj -height,  bust, waist, hip
+        self.gender = gender
+        self.height = height
+        self.bust = bust
+        self.waist = waist
+        self.hip = hip
 
         self._default_shortcuts = {
             # Actions
@@ -384,11 +392,14 @@ class MHApplication(gui3d.Application, mh.Application):
     def loadHuman(self):
         # Set a lower than default MAX_FACES value because we know the human has a good topology (will make it a little faster)
         # (we do not lower the global limit because that would limit the selection of meshes that MH would accept too much)
-        self.selectedHuman = self.addObject(human.Human(files3d.loadMesh(mh.getSysDataPath("3dobjs/base.obj"), maxFaces = 5)))
+
+        # mj - init HUMAN
+        self.selectedHuman = self.addObject(human.Human(files3d.loadMesh(mh.getSysDataPath("3dobjs/base.obj"), maxFaces = 5), self.gender, self.height, self.bust, self.waist, self.hip))
 
         # Set the base skeleton
         base_skel = skeleton.load(mh.getSysDataPath('rigs/default.mhskel'), self.selectedHuman.meshData)
         self.selectedHuman.setBaseSkeleton(base_skel)
+        # self.selectedHuman.setHairProxy("<Proxy short02 Hair data/hair/short02/short02.mhpxy c104cd4a-1edc-43f9-8b94-f63345a44638>")
 
     def loadScene(self):
         userSceneDir = mh.getDataPath("scenes")
@@ -500,7 +511,6 @@ class MHApplication(gui3d.Application, mh.Application):
         #self.getCategory("Rendering")
 
     def loadPlugins(self):
-
         # Load plugins not starting with _
         pluginsToLoad = glob.glob(mh.getSysPath(os.path.join("plugins/",'[!_]*.py')))
 
@@ -519,7 +529,6 @@ class MHApplication(gui3d.Application, mh.Application):
             fprog.step()
 
     def loadPlugin(self, path):
-
         try:
             name, ext = os.path.splitext(os.path.basename(path))
             if name not in self.getSetting('excludePlugins'):
@@ -528,19 +537,24 @@ class MHApplication(gui3d.Application, mh.Application):
 
                 module = None
                 fp, pathname, description = imp.find_module(name, ["plugins/"])
+
                 try:
                     module = imp.load_module(name, fp, pathname, description)
                 finally:
                     if fp:
                         fp.close()
+                
                 if module is None:
                     log.message("Could not import plugin %s", name)
                     return
 
                 self.modules[name] = module
+
                 log.message('Imported plugin %s', name)
                 log.message('Loading plugin %s', name)
+                
                 module.load(self)
+
                 log.message('Loaded plugin %s', name)
 
                 # Process all non-user-input events in the queue to make sure
@@ -548,6 +562,8 @@ class MHApplication(gui3d.Application, mh.Application):
                 self.processEvents()
             else:
                 self.modules[name] = None
+
+
         except Exception, _:
             log.warning('Could not load %s', name, exc_info=True)
 
@@ -712,79 +728,82 @@ class MHApplication(gui3d.Application, mh.Application):
 
         #printtree(self)
 
-        mh.changeCategory("Modelling")
+        # mh.changeCategory("Modelling")
+        mh.changeTask("Modelling", "Measure") # mj - change open-up screen to Modelling > Measure
+        # mh.changeCategory("Export")
+        mh.changeTask("Files", "Export")
+        # mh.changeCategory("Materials")
 
         self.redraw()
 
     def startupSequence(self):
         self._processCommandlineArgs(beforeLoaded = True)
 
-        mainwinGeometry = self.mainwin.storeGeometry()
-        mainwinBorder = (self.mainwin.frameGeometry().width() - self.mainwin.width(),
-             self.mainwin.frameGeometry().height() - self.mainwin.height())
+        # mainwinGeometry = self.mainwin.storeGeometry()
+        # mainwinBorder = (self.mainwin.frameGeometry().width() - self.mainwin.width(),
+             # self.mainwin.frameGeometry().height() - self.mainwin.height())
 
-        # Move main window completely behind splash screen
-        self.mainwin.resize(self.splash.width() - mainwinBorder[0], self.splash.height() - mainwinBorder[1])
-        self.mainwin.move(self.splash.pos())
+        # # Move main window completely behind splash screen
+        # self.mainwin.resize(self.splash.width() - mainwinBorder[0], self.splash.height() - mainwinBorder[1])
+        # self.mainwin.move(self.splash.pos())
 
         #self.splash.setFormat('<br><br><b><font size="10" color="#ffffff">%s</font></b>')
 
-        progress = Progress([36, 6, 15, 333, 40, 154, 257, 5], messaging=True)
+        # progress = Progress([36, 6, 15, 333, 40, 154, 257, 5], messaging=True)
 
-        progress.firststep('Loading human')
+        # progress.firststep('Loading human')
         self.loadHuman()
 
-        progress.step('Loading scene')
+        # progress.step('Loading scene')
         self.loadScene()
 
-        progress.step('Loading main GUI')
+        # progress.step('Loading main GUI')
         self.loadMainGui()
 
-        progress.step('Loading plugins')
+        # progress.step('Loading plugins')
         self.loadPlugins()
 
-        progress.step('Loading GUI')
-        self.loadGui()
+        # progress.step('Loading GUI')
+        # self.loadGui()
 
-        progress.step('Loading theme')
-        try:
-            self.setTheme(self.getSetting('guiTheme'))
-        except:
-            self.setTheme("default")
+        # progress.step('Loading theme')
+        # try:
+            # self.setTheme(self.getSetting('guiTheme'))
+        # except:
+            # self.setTheme("default")
 
-        progress.step('Applying targets')
+        # progress.step('Applying targets')
         self.loadFinish()
         
-        progress.step('Loading macro targets')
-        if self.getSetting('preloadTargets'):
-            self.loadMacroTargets()
+        # progress.step('Loading macro targets')
+        # if self.getSetting('preloadTargets'):
+            # self.loadMacroTargets()
 
-        progress.step('Loading done')
+        # progress.step('Loading done')
 
         log.message('') # Empty status indicator
 
-        if sys.platform.startswith("darwin"):
-            self.splash.resize(0,0) # work-around for mac splash-screen closing bug
+        # if sys.platform.startswith("darwin"):
+            # self.splash.resize(0,0) # work-around for mac splash-screen closing bug
 
-
-        self.mainwin.show()
-        self.splash.hide()
+        # self.mainwin.show() # mj - shows main window
+        # self.splash.hide() # mj - hides splash loading screen
         # self.splash.finish(self.mainwin)
-        self.splash.close()
-        self.splash = None
+        # self.splash.close()
+        # self.splash = None
 
-        self.prompt('Warning', 'MakeHuman is a character creation suite. It is designed for making anatomically correct humans.\nParts of this program may contain nudity.\nDo you want to proceed?', 'Yes', 'No', None, self.stop, 'nudityWarning')
+        # self.prompt('Warning', 'MakeHuman is a character creation suite. It is designed for making anatomically correct humans.\nParts of this program may contain nudity.\nDo you want to proceed?', 'Yes', 'No', None, self.stop, 'nudityWarning')
 
-        if not self.args.get('noshaders', False) and \
-          ( not mh.Shader.supported() or mh.Shader.glslVersion() < (1,20) ):
-            self.prompt('Warning', 'Your system does not support OpenGL shaders (GLSL v1.20 required).\nOnly simple shading will be available.', 'Ok', None, None, None, 'glslWarning')
+        # if not self.args.get('noshaders', False) and \
+          # ( not mh.Shader.supported() or mh.Shader.glslVersion() < (1,20) ):
+            # self.prompt('Warning', 'Your system does not support OpenGL shaders (GLSL v1.20 required).\nOnly simple shading will be available.', 'Ok', None, None, None, 'glslWarning')
 
         # Restore main window size and position
-        geometry = self.getSetting('windowGeometry')
-        if self.getSetting('restoreWindowSize') and geometry:
-            self.mainwin.restoreGeometry(geometry)
-        else:
-            self.mainwin.restoreGeometry(mainwinGeometry)
+        # geometry = self.getSetting('windowGeometry')
+        # if self.getSetting('restoreWindowSize') and geometry:
+            # self.mainwin.restoreGeometry(geometry)
+        # else:
+            # self.mainwin.restoreGeometry(mainwinGeometry)
 
         self._processCommandlineArgs(beforeLoaded = False)
 
@@ -1162,9 +1181,9 @@ class MHApplication(gui3d.Application, mh.Application):
         if text is not None:
             self.status(text, *args)
 
-        if self.splash:
-            self.splash.setProgress(value)
-            self.splash.raise_()
+        # if self.splash:
+            # self.splash.setProgress(value)
+            # self.splash.raise_()
 
         if self.progressBar is None:
             return
@@ -1747,8 +1766,8 @@ class MHApplication(gui3d.Application, mh.Application):
 
         self.createShortcuts()
 
-        self.splash = gui.SplashScreen(self.getThemeResource('images', 'splash.png'), mh.getVersionDigitsStr())
-        self.splash.show()
+        # self.splash = gui.SplashScreen(self.getThemeResource('images', 'splash.png'), mh.getVersionDigitsStr())
+        # self.splash.show()
         if sys.platform != 'darwin':
             self.mainwin.hide()  # Fix for OSX crash thanks to Francois (issue #593)
 

@@ -1,0 +1,17 @@
+# MakeHuman exported MTL
+# www.makehuman.org
+
+
+newmtl young_asian_female
+Kd 1 0.95 0.85
+Ks 0.02745 0.02745 0.02745
+d 0
+map_Kd textures/young_lightskinned_female_diffuse3.png
+map_D textures/young_lightskinned_female_diffuse3.png
+
+newmtl Eye_brown
+Kd 1 1 1
+Ks 1 1 1
+d 0
+map_Kd textures/brown_eye.png
+map_D textures/brown_eye.png
