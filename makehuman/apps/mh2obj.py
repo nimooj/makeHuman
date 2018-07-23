@@ -218,7 +218,7 @@ def exportObj(filepath, config=None):
 
     # Send Message to Avatar delivery
     # h = win32gui.FindWindow(None, "Avatar") 
-    # win32api.SnendMessage(hwnd, win32con.WM_COPYDATA, 0, "LOAD BODY")
+    # win32api.SendMessage(hwnd, win32con.WM_COPYDATA, 0, "LOAD BODY")
 
     # Kill MakeHuman
     os.system("taskkill /PID " + str(cpid))

@@ -40,12 +40,11 @@ import wavefront
 import os
 from progress import Progress
 import numpy as np
-# import win32api, win32gui, win32con
+import win32api, win32gui, win32con
 import psutil
 import json
 import bvh
 from core import G
-
 import skeleton
 import mh
 
@@ -110,6 +109,7 @@ def exportObj(filepath, config=None):
     pure_name = filename.replace(".obj", "")
     progress(0.3, 0.99, "Writing Objects")
 
+    print "exporting..."
 
     #centering, crotch_y = wavefront.writeObjFile(filepath, meshes, True, config, filterMaskedFaces=not config.hiddenGeom)
     centering = wavefront.writeObjFile(filepath, meshes, os.path.join(filepath, "..\\" + pure_name + "vertices.txt"), True, config, filterMaskedFaces=not config.hiddenGeom)
@@ -128,8 +128,7 @@ def exportObj(filepath, config=None):
     # print p
     # print p[0].pid
 
-
-    # cpid = win32api.GetCurrentProcessId();
+    cpid = win32api.GetCurrentProcessId();
 
     path = os.path.join(root, pure_name+ ".BodyInfo")
 
@@ -217,4 +216,4 @@ def exportObj(filepath, config=None):
 
     # r = win32api.SendMessage(win32con.HWND_BROADCAST, 56789, 0, 0)
     # Kill MakeHuman
-    #os.system("taskkill /PID " + str(cpid))
+    os.system("taskkill /PID " + str(cpid))

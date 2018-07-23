@@ -716,7 +716,7 @@ class Application(QtGui.QApplication, events3d.EventHandler):
         self.messages = queue.Manager(self._postAsync)
         self.mainwin = Frame(self, (G.windowWidth, G.windowHeight))
         self.statusBar = self.mainwin.statusBar
-        # self.progressBar = self.mainwin.progressBar
+        self.progressBar = self.mainwin.progressBar
         # self.mainwin.show()
         self.log_window = LogWindow()
         
