@@ -65,6 +65,34 @@ class MeasureTaskView(guimodifier.ModifierTaskView):
         self.waist = self.statsBox.addWidget(gui.TextView('Waist: '))
         self.hips = self.statsBox.addWidget(gui.TextView('Hips: '))
 
+        # mj - new location
+        human = G.app.selectedHuman
+        
+        human.applyAllTargets()
+
+        """
+        self.customModify("lowerarm-length", human.armLength/2)
+        self.customModify("upperarm-length", human.armLength/2)
+        self.customModify("upperarm-circ", human.bicep)
+
+
+        self.customModify("waisttohip-dist", human.waistHeight - human.highHipHeight)
+        self.customModify("napetowaist-dist", human.neckHeight - human.waistHeight)
+
+
+        self.customModify("lowerleg-height", human.kneeHeight)
+        self.customModify("upperleg-height", human.highHipHeight - human.kneeHeight)
+        self.customModify("thigh-circ", human.thigh)
+        
+        self.customModify("hips-circ", human.hip)
+
+        self.customModify("waist-circ", human.waist)
+        self.customModify("bust-circ", human.bust)
+        self.customModify("underbust-circ", human.underBust)
+        self.customModify("frontchest-dist", human.frontChest)
+        """
+
+
     def customModify(self, feature, goal):
         # mj - try modify body in init
         # 1. Find where MeasureTaskView is first instantiated
@@ -160,29 +188,37 @@ class MeasureTaskView(guimodifier.ModifierTaskView):
             self.lastActive = self.groupBoxes['Torso'].children[0]
         self.lastActive.setFocus()
 
-        # mj - new location
         human = G.app.selectedHuman
         
         # mj - set height
         height = human.getHeightCm()
-        heightDiff = human.custom_height - height
-        if abs(heightDiff) > 0.2:
-            napetowaist = self.getMeasure('measure/measure-napetowaist-dist-decr|incr')
-            waisttohip = self.getMeasure('measure/measure-waisttohip-dist-decr|incr')
-            upperleg = self.getMeasure('measure/measure-upperleg-height-decr|incr')
-            lowerleg = self.getMeasure('measure/measure-lowerleg-height-decr|incr')
-            self.customModify("napetowaist-dist", napetowaist + heightDiff/4)
-            self.customModify("waisttohip-dist", waisttohip + heightDiff/4)
-            self.customModify("upperleg-height", upperleg + heightDiff/4)
-            self.customModify("lowerleg-height", lowerleg + heightDiff/4)
+
+        self.customModify("lowerarm-length", human.armLength/2)
+        self.customModify("upperarm-length", human.armLength/2)
+        self.customModify("upperarm-circ", human.bicep)
+
+        self.customModify("lowerleg-height", human.kneeHeight)
+        self.customModify("upperleg-height", human.highHipHeight - human.kneeHeight)
+        self.customModify("thigh-circ", human.thigh)
+
+        self.customModify("waisttohip-dist", human.waistHeight - human.highHipHeight)
+        self.customModify("napetowaist-dist", human.neckHeight - human.waistHeight)
 
         self.customModify("hips-circ", human.hip)
+
         self.customModify("waist-circ", human.waist)
+        self.customModify("frontchest-dist", human.frontChest)
         self.customModify("bust-circ", human.bust)
+        self.customModify("underbust-circ", human.underBust)
+
+        human.applyAllTargets()
 
         self.syncGUIStats()
+        self.syncStatistics()
         self.updateMeshes()
-        # human = G.app.selectedHuman
+        self.syncSliders()
+
+
 
     def onHide(self, event):
         human = G.app.selectedHuman
@@ -238,7 +274,7 @@ class MeasureTaskView(guimodifier.ModifierTaskView):
         human = G.app.selectedHuman
 
         height = human.getHeightCm()
-        print height
+        #print height
         if G.app.getSetting('units') == 'metric':
             height = '%.2f cm' % height
         else:

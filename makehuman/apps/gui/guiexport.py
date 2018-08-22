@@ -282,9 +282,7 @@ class ExportTaskView(gui3d.TaskView):
         self.fileentry.setFocus()
         self.addExporter(ExporterOBJ())
         for exporter in [f[0] for f in self.formats]:
-            print "??"
             exporter.export(gui3d.app.selectedHuman, "")
-            print "!!"
             gui3d.app.status([u'The mesh has been exported to',u' %s.'], dir)
             break
 

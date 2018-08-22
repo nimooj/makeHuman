@@ -165,7 +165,6 @@ class SubdivisionObject(Object3D):
         ftedges2 = ftedges2.reshape(tedges[...,0].shape)
 
         progress.step()
-
         nfaces = len(self.face_map)
 
         self.fvert = np.empty((nfaces,4,4), dtype=np.uint32)

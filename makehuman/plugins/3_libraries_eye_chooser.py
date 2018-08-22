@@ -85,7 +85,7 @@ def load(app):
     taskview.registerLoadSaveHandlers()
 
     # Load initial eyes
-    taskview.selectProxy(mh.getSysDataPath("eyes/high-poly/high-poly.mhclo"))
+    #taskview.selectProxy(mh.getSysDataPath("eyes/high-poly/high-poly.mhclo"))
 
 # This method is called when the plugin is unloaded from makehuman
 # At the moment this is not used, but in the future it will remove the added GUI elements

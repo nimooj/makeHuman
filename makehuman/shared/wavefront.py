@@ -468,9 +468,18 @@ def writeObjFile(path, meshes, filepath, writeMTL=True, config=None, filterMaske
         # Unfiltered
         meshes = [m.clone(scale=scale, filterMaskedVerts=False) for m in meshes]
 
+    # mj - exclude nipple point meshes
     # Vertices
+    ni = 0
     for mesh in meshes:
-        fp.write("".join( ["v %.4f %.4f %.4f\n" % tuple(co + offset) for co in mesh.coord] ))
+        #fp.write("".join( ["v %.4f %.4f %.4f\n" % tuple(co + offset) for co in mesh.coord] ))
+        for co in mesh.coord:
+            if ni < 1778 or (ni > 1793 and ni < 8450) or ni > 8465:
+                fp.write("".join(["v %.4f %.4f %.4f\n" % tuple(co + offset)]))
+            else:
+                co[2] -= 0.3
+                fp.write("".join(["v %.4f %.4f %.4f\n" % tuple(co + offset)]))
+            ni += 1
 
     flatten = []
     for mesh in meshes:
@@ -557,12 +566,9 @@ def writeObjFile(path, meshes, filepath, writeMTL=True, config=None, filterMaske
         for mesh in meshes:
             writeMaterial(fp, mesh.material, config)
         fp.close()
-
     
 #    return [centering, crotch_y]
     return centering
-
-
 #
 #   writeMaterial(fp, mat, config):
 #

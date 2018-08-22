@@ -496,6 +496,7 @@ class Object(events3d.EventHandler):
 
         faceMask = mesh.getFaceMask()
         faceGroups = mesh.group
+        print faceGroups
 
         self.material.uvMap = filename
 

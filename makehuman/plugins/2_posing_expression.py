@@ -48,6 +48,7 @@ import animation
 import log
 import filecache
 import filechooser as fc
+from core import G
 
 
 class ExpressionAction(gui3d.Action):
@@ -72,7 +73,8 @@ class ExpressionTaskView(gui3d.TaskView, filecache.MetadataCacher):
         self.extension = 'mhpose'
         filecache.MetadataCacher.__init__(self, self.extension, 'expression_filecache.mhc')
 
-        self.human = gui3d.app.selectedHuman
+        #self.human = gui3d.app.selectedHuman
+        self.human = G.app.selectedHuman
         self.selectedFile = None
         self.selectedPose = None
         self.face_bone_idxs = None
@@ -88,6 +90,7 @@ class ExpressionTaskView(gui3d.TaskView, filecache.MetadataCacher):
         if not os.path.exists(self.userPath):
             os.makedirs(self.userPath)
 
+
         self.filechooser = self.addRightWidget(fc.IconListFileChooser( \
                                                     self.paths,
                                                     self.extension,
@@ -98,6 +101,9 @@ class ExpressionTaskView(gui3d.TaskView, filecache.MetadataCacher):
                                                     doNotRecurse = True))
         self.filechooser.setIconSize(50,50)
         self.filechooser.enableAutoRefresh(False)
+
+        gui3d.app.do(ExpressionAction("", self.selectedFile, "data/expressions\sleep01.mhpose", self))
+        #self.chooseExpression("data/expressions\sleep01.mhpose")
 
         @self.filechooser.mhEvent
         def onFileSelected(filename):
@@ -135,8 +141,11 @@ class ExpressionTaskView(gui3d.TaskView, filecache.MetadataCacher):
         if self.base_bvh is None:
             self._load_pose_units()
 
-        if gui3d.app.getSetting('cameraAutoZoom'):
-            gui3d.app.setFaceCamera()
+        #if gui3d.app.getSetting('cameraAutoZoom'):
+            #gui3d.app.setFaceCamera()
+
+        # mj - Expression change
+        #gui3d.app.do(ExpressionAction("", self.selectedFile, "data/expressions\sleep01.mhpose", self))
 
     def _get_current_pose(self):
         return self.human.getActiveAnimation()
@@ -197,6 +206,7 @@ class ExpressionTaskView(gui3d.TaskView, filecache.MetadataCacher):
             self.human.refreshPose(updateIfInRest=True)
             return
 
+        self._load_pose_units()
         # Assign to human
         self.selectedPose = animation.poseFromUnitPose('expr-lib-pose', filename, self.base_anim)
         self.applyToPose(self.selectedPose)

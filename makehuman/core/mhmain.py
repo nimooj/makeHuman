@@ -148,7 +148,7 @@ class SymmetryAction(gui3d.Action):
 
 
 class MHApplication(gui3d.Application, mh.Application):
-    def __init__(self, gender, height, bust, waist, hip):
+    def __init__(self, gender=0, frontchest=40, arm=55, bust=90, underbust=80, height=165, highhipH=100, kneeH=50, hip=90, thigh=36, neckH=140, bicep=30, waist=70, waistH=110):
         if G.app is not None:
             raise RuntimeError('MHApplication is a singleton')
         G.app = self
@@ -156,12 +156,21 @@ class MHApplication(gui3d.Application, mh.Application):
         # mj - mh.Application disable mainwin.show
         mh.Application.__init__(self)
 
-        # mj -height,  bust, waist, hip
+        # mj - custom Param
         self.gender = gender
-        self.height = height
+        self.frontChest = frontchest
+        self.armLength = arm
         self.bust = bust
-        self.waist = waist
+        self.underBust = underbust
+        self.height = height
+        self.highHipHeight = highhipH
+        self.kneeHeight = kneeH
         self.hip = hip
+        self.thigh = thigh
+        self.neckHeight = neckH
+        self.bicep = bicep
+        self.waist = waist
+        self.waistHeight = waistH
 
         self._default_shortcuts = {
             # Actions
@@ -394,12 +403,11 @@ class MHApplication(gui3d.Application, mh.Application):
         # (we do not lower the global limit because that would limit the selection of meshes that MH would accept too much)
 
         # mj - init HUMAN
-        self.selectedHuman = self.addObject(human.Human(files3d.loadMesh(mh.getSysDataPath("3dobjs/base.obj"), maxFaces = 5), self.gender, self.height, self.bust, self.waist, self.hip))
+        self.selectedHuman = self.addObject(human.Human(files3d.loadMesh(mh.getSysDataPath("3dobjs/base.obj"), maxFaces = 5), 0, self.gender, self.frontChest, self.armLength, self.bust, self.underBust, self.height, self.highHipHeight, self.kneeHeight, self.hip, self.thigh, self.neckHeight, self.bicep, self.waist, self.waistHeight))
 
         # Set the base skeleton
         base_skel = skeleton.load(mh.getSysDataPath('rigs/default.mhskel'), self.selectedHuman.meshData)
         self.selectedHuman.setBaseSkeleton(base_skel)
-        # self.selectedHuman.setHairProxy("<Proxy short02 Hair data/hair/short02/short02.mhpxy c104cd4a-1edc-43f9-8b94-f63345a44638>")
 
     def loadScene(self):
         userSceneDir = mh.getDataPath("scenes")
@@ -568,7 +576,6 @@ class MHApplication(gui3d.Application, mh.Application):
             log.warning('Could not load %s', name, exc_info=True)
 
     def unloadPlugins(self):
-
         for name, module in self.modules.iteritems():
             if module is None:
                 continue
@@ -721,91 +728,90 @@ class MHApplication(gui3d.Application, mh.Application):
             algos3d.getTarget(self.selectedHuman.meshData, target.path)
 
     def loadFinish(self):
-        self.selectedHuman.updateMacroModifiers()
-        self.selectedHuman.applyAllTargets()
-
+        #self.selectedHuman.updateMacroModifiers()
+        #self.selectedHuman.applyAllTargets()
         self.currentFile.modified = False
 
         #printtree(self)
 
-        # mh.changeCategory("Modelling")
-        mh.changeTask("Modelling", "Measure") # mj - change open-up screen to Modelling > Measure
-        # mh.changeCategory("Export")
         mh.changeTask("Files", "Export")
-        # mh.changeCategory("Materials")
 
         self.redraw()
 
     def startupSequence(self):
         self._processCommandlineArgs(beforeLoaded = True)
 
-        # mainwinGeometry = self.mainwin.storeGeometry()
-        # mainwinBorder = (self.mainwin.frameGeometry().width() - self.mainwin.width(),
-             # self.mainwin.frameGeometry().height() - self.mainwin.height())
+        #mainwinGeometry = self.mainwin.storeGeometry()
+        #mainwinBorder = (self.mainwin.frameGeometry().width() - self.mainwin.width(), self.mainwin.frameGeometry().height() - self.mainwin.height())
 
         # # Move main window completely behind splash screen
-        # self.mainwin.resize(self.splash.width() - mainwinBorder[0], self.splash.height() - mainwinBorder[1])
-        # self.mainwin.move(self.splash.pos())
+        #$self.mainwin.resize(self.splash.width() - mainwinBorder[0], self.splash.height() - mainwinBorder[1])
+        #self.mainwin.move(self.splash.pos())
 
         #self.splash.setFormat('<br><br><b><font size="10" color="#ffffff">%s</font></b>')
 
-        # progress = Progress([36, 6, 15, 333, 40, 154, 257, 5], messaging=True)
+        #progress = Progress([36, 6, 15, 333, 40, 154, 257, 5], messaging=True)
 
-        # progress.firststep('Loading human')
+        #progress.firststep('Loading human')
         self.loadHuman()
 
-        # progress.step('Loading scene')
-        self.loadScene()
+        #progress.step('Loading scene')
+        #self.loadScene()
 
-        # progress.step('Loading main GUI')
-        self.loadMainGui()
+        #progress.step('Loading main GUI')
+        self.loadMainGui() # mj - needed to auto generation and export
 
-        # progress.step('Loading plugins')
+        #progress.step('Loading plugins')
         self.loadPlugins()
 
-        # progress.step('Loading GUI')
-        # self.loadGui()
+        #progress.step('Loading GUI')
+        #self.loadGui()
 
-        # progress.step('Loading theme')
-        # try:
-            # self.setTheme(self.getSetting('guiTheme'))
-        # except:
-            # self.setTheme("default")
+        #progress.step('Loading theme')
+        #try:
+            #self.setTheme(self.getSetting('guiTheme'))
+        #except:
+            #self.setTheme("default")
 
-        # progress.step('Applying targets')
+        #progress.step('Applying targets')
         self.loadFinish()
+
+        #mh.changeTask("Pose/Animate", "Pose")
+        #mh.changeTask("Pose/Animate", "Expressions")
+        #self.getCategory("Pose/Animate")
+        #mh.changeTask("Modelling", "Measure") # mj - change open-up screen to Modelling > Measure
+        #mh.changeTask("Files", "Export")
         
-        # progress.step('Loading macro targets')
-        # if self.getSetting('preloadTargets'):
-            # self.loadMacroTargets()
+        #progress.step('Loading macro targets')
+        #if self.getSetting('preloadTargets'):
+            #self.loadMacroTargets()
 
-        # progress.step('Loading done')
+        #progress.step('Loading done')
 
-        log.message('') # Empty status indicator
 
-        # if sys.platform.startswith("darwin"):
-            # self.splash.resize(0,0) # work-around for mac splash-screen closing bug
+        #if sys.platform.startswith("darwin"):
+            #self.splash.resize(0,0) # work-around for mac splash-screen closing bug
 
-        # self.mainwin.show() # mj - shows main window
-        # self.splash.hide() # mj - hides splash loading screen
-        # self.splash.finish(self.mainwin)
-        # self.splash.close()
-        # self.splash = None
+        #self.mainwin.show() # mj - shows main window
+        #self.splash.hide() # mj - hides splash loading screen
+        #self.splash.finish(self.mainwin)
+        #self.splash.close()
+        #self.splash = None
 
-        # self.prompt('Warning', 'MakeHuman is a character creation suite. It is designed for making anatomically correct humans.\nParts of this program may contain nudity.\nDo you want to proceed?', 'Yes', 'No', None, self.stop, 'nudityWarning')
+        #self.prompt('Warning', 'MakeHuman is a character creation suite. It is designed for making anatomically correct humans.\nParts of this program may contain nudity.\nDo you want to proceed?', 'Yes', 'No', None, self.stop, 'nudityWarning')
 
-        # if not self.args.get('noshaders', False) and \
-          # ( not mh.Shader.supported() or mh.Shader.glslVersion() < (1,20) ):
-            # self.prompt('Warning', 'Your system does not support OpenGL shaders (GLSL v1.20 required).\nOnly simple shading will be available.', 'Ok', None, None, None, 'glslWarning')
+        #if not self.args.get('noshaders', False) and \
+          #( not mh.Shader.supported() or mh.Shader.glslVersion() < (1,20) ):
+            #self.prompt('Warning', 'Your system does not support OpenGL shaders (GLSL v1.20 required).\nOnly simple shading will be available.', 'Ok', None, None, None, 'glslWarning')
 
         # Restore main window size and position
-        # geometry = self.getSetting('windowGeometry')
-        # if self.getSetting('restoreWindowSize') and geometry:
-            # self.mainwin.restoreGeometry(geometry)
-        # else:
-            # self.mainwin.restoreGeometry(mainwinGeometry)
+        #geometry = self.getSetting('windowGeometry')
+        #if self.getSetting('restoreWindowSize') and geometry:
+            #self.mainwin.restoreGeometry(geometry)
+        #else:
+        #    self.mainwin.restoreGeometry(mainwinGeometry)
 
-        self._processCommandlineArgs(beforeLoaded = False)
+        #self._processCommandlineArgs(beforeLoaded = False)
 
     def _processCommandlineArgs(self, beforeLoaded):
         if beforeLoaded:
@@ -831,6 +837,8 @@ class MHApplication(gui3d.Application, mh.Application):
     # Events
     def onStart(self, event):
         self.startupSequence()
+        # mj  - terminate program
+        self.promptAndExit()
 
     def onStop(self, event):
         if self.getSetting('restoreWindowSize'):
@@ -1181,9 +1189,9 @@ class MHApplication(gui3d.Application, mh.Application):
         if text is not None:
             self.status(text, *args)
 
-        # if self.splash:
-            # self.splash.setProgress(value)
-            # self.splash.raise_()
+        #if self.splash:
+            #self.splash.setProgress(value)
+            #self.splash.raise_()
 
         if self.progressBar is None:
             return
@@ -1749,8 +1757,8 @@ class MHApplication(gui3d.Application, mh.Application):
         mh.Application.OnInit(self)
 
         #[BAL 07/14/2013] work around focus bug in PyQt on OS X
-        if sys.platform == 'darwin':
-            G.app.mainwin.raise_()
+        #if sys.platform == 'darwin':
+            #G.app.mainwin.raise_()
 
         self.setLanguage("english")
 
@@ -1766,10 +1774,10 @@ class MHApplication(gui3d.Application, mh.Application):
 
         self.createShortcuts()
 
-        # self.splash = gui.SplashScreen(self.getThemeResource('images', 'splash.png'), mh.getVersionDigitsStr())
-        # self.splash.show()
-        if sys.platform != 'darwin':
-            self.mainwin.hide()  # Fix for OSX crash thanks to Francois (issue #593)
+        #self.splash = gui.SplashScreen(self.getThemeResource('images', 'splash.png'), mh.getVersionDigitsStr())
+        #self.splash.show()
+        #if sys.platform != 'darwin':
+            #self.mainwin.hide()  # Fix for OSX crash thanks to Francois (issue #593)
 
         self.tabs = self.mainwin.tabs
 

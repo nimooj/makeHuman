@@ -92,6 +92,7 @@ def exportObj(filepath, config=None):
     progress(0, 0.3, "Collecting Objects")
     objects = human.getObjects(excludeZeroFaceObjs=not config.hiddenGeom)
     meshes = [o.mesh for o in objects]
+    print meshes[0]
 
     if config.hiddenGeom:
         # Disable the face masking on copies of the input meshes
@@ -216,4 +217,5 @@ def exportObj(filepath, config=None):
 
     # r = win32api.SendMessage(win32con.HWND_BROADCAST, 56789, 0, 0)
     # Kill MakeHuman
-    os.system("taskkill /PID " + str(cpid))
+    #os.system("taskkill /PID " + str(cpid))
+    #os.system("taskkill /im python.exe")

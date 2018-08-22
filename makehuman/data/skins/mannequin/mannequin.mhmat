@@ -23,6 +23,7 @@ tag sexy
 
 tag genitals
 #diffuseTexture ../textures/white.png
+diffuseTexture ../textures/black_jammers.png
 
 sssEnabled True
 sssRScale 5.0
@@ -30,7 +31,7 @@ sssGScale 2.5
 sssBScale 1.0
 
 shader data/shaders/glsl/litsphere
-shaderParam litsphereTexture data/litspheres/lit_leather.png
+shaderParam litsphereTexture data/litspheres/lit_standard_skin.png
 #shaderParam litsphereTexture data/litspheres/lit_matte.png
 
 

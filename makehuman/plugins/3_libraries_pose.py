@@ -92,7 +92,7 @@ class PoseLibraryTaskView(gui3d.TaskView, filecache.MetadataCacher):
         self.filechooser.setIconSize(50,50)
         self.filechooser.enableAutoRefresh(False)
 
-        # Setting default pose to custom.bvh
+        # mj - Setting default pose to custom.bvh
         gui3d.app.do(PoseAction("Change pose", self, self.currentPose, "data/poses/custom.bvh"))
 
         @self.filechooser.mhEvent
@@ -222,6 +222,8 @@ class PoseLibraryTaskView(gui3d.TaskView, filecache.MetadataCacher):
         self.filechooser.refresh()
         self.filechooser.selectItem(self.currentPose)
         self.human.refreshPose()
+        # mj - Setting default pose to custom.bvh
+        #gui3d.app.do(PoseAction("Change pose", self, self.currentPose, "data/poses/custom.bvh"))
 
     def onHide(self, event):
         gui3d.app.statusPersist('')

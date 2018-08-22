@@ -301,7 +301,14 @@ class Pose(AnimationTrack):
         if len(self.unitposes) == 0:
             raise RuntimeError("Cannot load pose: unit_poses dict needs to contain at least one entry")
 
+        # mj - enforce sleep expression whenever
+        #if "sleep" in filename:
+        self.unitposes['LeftUpperLidClosed'] = 1.0
+        self.unitposes['RightUpperLidClosed'] = 1.0
+        self.unitposes['JawDrop'] = 0.0
+
         self._data = poseUnit.getBlendedPose(self.unitposes.keys(), self.unitposes.values(), only_data=True)
+
         self.dataLen = len(self._data)
         self.nFrames = 1
         self.nBones = self.dataLen

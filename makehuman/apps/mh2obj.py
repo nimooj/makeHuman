@@ -221,4 +221,5 @@ def exportObj(filepath, config=None):
     # win32api.SendMessage(hwnd, win32con.WM_COPYDATA, 0, "LOAD BODY")
 
     # Kill MakeHuman
-    os.system("taskkill /PID " + str(cpid))
+    #os.system("taskkill /PID " + str(cpid))
+    #os.system("taskkill /im makehuman.exe")

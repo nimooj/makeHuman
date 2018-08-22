@@ -51,10 +51,11 @@ from makehuman import getBasemeshVersion, getShortVersion, getVersionStr, getVer
 
 
 class Human(guicommon.Object, animation.AnimatedMesh):
-    def __init__(self, mesh, gender=1, height=160, bust=90, waist=70, hip=95):
+    def __init__(self, mesh, build=0, gender=0, frontchest=40, arm=55, bust=90, underbust=80, height=165, highhipH=100, kneeH=50, hip=90, thigh=36, neckH=140, bicep=30, waist=70, waistH=110):
         guicommon.Object.__init__(self, mesh)
 
         self.hasWarpTargets = False
+        self.buildFlag = build
 
         self.MIN_AGE = 1.0
         self.MAX_AGE = 90.0
@@ -62,10 +63,22 @@ class Human(guicommon.Object, animation.AnimatedMesh):
 
         # mj - define size
         self.gender = gender
-        self.custom_height = height
+        self.frontChest = frontchest
+        self.armLength = arm
         self.bust = bust
-        self.waist = waist
+        self.underBust = underbust
+        self.customHeight = height
+        self.highHipHeight = highhipH
+        self.kneeHeight = kneeH
         self.hip = hip
+        self.thigh = thigh
+        self.neckHeight = neckH
+        self.bicep = bicep
+        self.waist = waist
+        self.waistHeight = waistH
+
+        self.changeFlag = 0
+
 
         self.mesh.setCameraProjection(0)
         self.mesh.setPickable(True)
@@ -82,8 +95,8 @@ class Human(guicommon.Object, animation.AnimatedMesh):
 
         self.setDefaultValues()
 
-        self.bodyZones = ['l-eye','r-eye', 'jaw', 'nose', 'mouth', 'head', 'neck', 'torso', 'hip', 'pelvis', 'r-upperarm', 'l-upperarm', 'r-lowerarm', 'l-lowerarm', 'l-hand',
-                          'r-hand', 'r-upperleg', 'l-upperleg', 'r-lowerleg', 'l-lowerleg', 'l-foot', 'r-foot', 'ear']
+        #self.bodyZones = ['l-eye','r-eye', 'jaw', 'nose', 'mouth', 'head', 'neck', 'torso', 'hip', 'pelvis', 'r-upperarm', 'l-upperarm', 'r-lowerarm', 'l-lowerarm', 'l-hand', 'r-hand', 'r-upperleg', 'l-upperleg', 'r-lowerleg', 'l-lowerleg', 'l-foot', 'r-foot', 'ear']
+        self.bodyZones = ['jaw', 'nose', 'mouth', 'head', 'neck', 'torso', 'hip', 'pelvis', 'r-upperarm', 'l-upperarm', 'r-lowerarm', 'l-lowerarm', 'l-hand', 'r-hand', 'r-upperleg', 'l-upperleg', 'r-lowerleg', 'l-lowerleg', 'l-foot', 'r-foot', 'ear']
 
         self.material = material.fromFile(getSysDataPath('skins/young_asian_female/young_asian_female.mhmat'))
         self._defaultMaterial = material.Material().copyFrom(self.material)
@@ -1104,7 +1117,10 @@ class Human(guicommon.Object, animation.AnimatedMesh):
 
         # Apply targets to seedmesh coordinates
         itprog = Progress(len(self.targetsDetailStack))
+
         for (targetPath, morphFactor) in self.targetsDetailStack.iteritems():
+            if self.gender == 1 and "hip" in targetPath:
+                continue
             algos3d.loadTranslationTarget(self.meshData, targetPath, morphFactor, None, 0, 0) # mj - size modification of the human
             itprog.step()
 
@@ -1239,9 +1255,19 @@ class Human(guicommon.Object, animation.AnimatedMesh):
     def setDefaultValues(self):
         self.age = 0.5
         #self.gender = 0 # mj - Default gender in init
-        self.weight = 0.3 # mj 
-        self.muscle = 0.5 # mj 
+        # mj - enlarge size
+        if self.bust > 100 or self.waist > 100 or self.hip > 100:
+            self.weight = 1.0
+            self.muscle = 0.6
+        elif self.bust < 90 or self.waist < 90 or self.hip < 90:
+            self.weight = 0.45
+            self.muscle = 0.3
+        else:
+            self.weight = 0.5 # mj 
+            self.muscle = 0.5 # mj 
+
         self.height = 0.5 # mj
+
         self.breastSize = 0.5
         self.breastFirmness = 0.5
         self.bodyProportions = 0.5
@@ -1410,6 +1436,7 @@ class Human(guicommon.Object, animation.AnimatedMesh):
         self.callEvent('onChanged', event)
 
     def refreshPose(self, updateIfInRest=False):
+        import mh
         # TODO investigate why at startup this is called so often
         event = events3d.HumanEvent(self, 'poseRefresh')
         self.callEvent('onChanging', event)
@@ -1421,6 +1448,11 @@ class Human(guicommon.Object, animation.AnimatedMesh):
             self.mesh.calcNormals()
             self.mesh.update()
         self.callEvent('onChanged', event)
+        # mj - when not from compile_proxy
+        # mj - resetting human to custom measure whenever modified
+
+        if G.app is not None:
+            mh.changeTask("Modelling", "Measure") 
 
     def load(self, filename, update=True, strict=False):
         from codecs import open

@@ -121,6 +121,10 @@ class ProxyChooserTaskView(gui3d.TaskView, filecache.MetadataCacher):
 
         self.createFileChooser()
 
+        # mj - set default hair to short02
+        if self.proxyName == "hair":
+            self.proxyFileSelected("data/hair\short02\short02.mhpxy")
+
 
     def createFileChooser(self):
         """

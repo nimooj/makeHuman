@@ -717,7 +717,7 @@ class Application(QtGui.QApplication, events3d.EventHandler):
         self.mainwin = Frame(self, (G.windowWidth, G.windowHeight))
         self.statusBar = self.mainwin.statusBar
         self.progressBar = self.mainwin.progressBar
-        # self.mainwin.show()
+        #self.mainwin.show()
         self.log_window = LogWindow()
         
     def started(self):

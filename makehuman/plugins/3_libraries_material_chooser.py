@@ -99,6 +99,19 @@ class MaterialTaskView(gui3d.TaskView, filecache.MetadataCacher):
         self.filechooser.setFileLoadHandler(fc.TaggedFileLoader(self))
         self.addLeftWidget(self.filechooser.createTagFilter())
 
+        # mj - bifurcate mat on gender
+
+        mat = None
+        if self.human.gender != 0: # when not female
+            mat = material.fromFile("data/skins\\black_jammers\\black_jammers.mhmat")
+        else:
+            mat = material.fromFile("data/skins\young_asian_female\young_asian_female.mhmat")
+
+        obj = self.humanObjSelector.getSelectedObject()
+        if obj:
+            gui3d.app.do(MaterialAction(obj, mat))
+
+
     def getMetadataImpl(self, filename):
         return material.peekMetadata(filename)
 
